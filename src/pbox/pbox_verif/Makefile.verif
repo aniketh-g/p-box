@@ -1,0 +1,23 @@
+
+
+SIM ?= verilator
+TOPLEVEL_LANG ?= verilog
+
+PWD=$(shell pwd)
+
+export PYTHONPATH := $(PWD)/pbox_verif
+
+ifeq ($(TOPLEVEL_LANG),verilog)
+  VERILOG_SOURCES =$(PWD)/verilog/mkpbox.v
+else
+  $(error "A valid value (verilog) was not provided for TOPLEVEL_LANG=$(TOPLEVEL_LANG)")
+endif
+EXTRA_ARGS = --trace --trace-structs
+
+TOPLEVEL := mkpbox
+MODULE   := test_pbox
+
+include $(shell cocotb-config --makefiles)/Makefile.sim
+
+
+
