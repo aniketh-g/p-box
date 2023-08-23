@@ -27,6 +27,10 @@ package stage4;
   import ccore_types  :: * ;
   import dcache_types :: * ;
   import pipe_ifcs    :: * ;
+`ifdef psimd
+  import pbox          :: * ;
+  import pbox_types    :: * ;
+`endif
 
 
   `include "Logger.bsv"
@@ -79,7 +83,9 @@ module mkstage4#(parameter Bit#(`xlen) hartid)(Ifc_stage4);
   `ifdef spfpu
   RX#(XBoxOutput) rx_fbox <- mkRX;
   `endif
+  `ifdef psimd
   RX#(PBoxOutput) rx_pbox <- mkRX;
+  `endif
 
   
     /*doc:submodule: Following are the virtual FIFOs connected to the ISBs feeding into the
@@ -328,10 +334,10 @@ module mkstage4#(parameter Bit#(`xlen) hartid)(Ifc_stage4);
  * write-back stage
 */
 rule rl_capture_psimd(rx_fuid.u.first.insttype == PSIMD && rx_pbox.u.notEmpty());
-  let pbox_result = rx_pbox.u.first;
+  let pbox_result = rx_pbox.u.first.data;
   let fuid = fn_fu2cu(rx_fuid.u.first);
   rx_pbox.u.deq;
-  tx_baseout.u.enq(BaseOut {rd: rx_fuid.u.first.rd, rdvalue: pbox_result, epochs: fuid.epochs
+  tx_baseout.u.enq(BaseOut {rd: rx_fuid.u.first.rd, rdvalue: pack(pbox_result), epochs: fuid.epochs
         `ifdef no_wawstalls ,id: fuid.id `endif
         `ifdef spfpu ,fflags: 0, rdtype: IRF `endif });
   fuid.insttype = BASE;
@@ -344,7 +350,7 @@ rule rl_capture_psimd(rx_fuid.u.first.insttype == PSIMD && rx_pbox.u.notEmpty())
   CommitLogReg _pkt =?;
   if (clogpkt.inst_type matches tagged REG .r)
     _pkt = r;
-  _pkt.wdata = pbox_result;
+  _pkt.wdata = pack(pbox_result);
   clogpkt.inst_type = tagged REG _pkt;
   tx_commitlog.u.enq(clogpkt);
   rx_commitlog.u.deq;

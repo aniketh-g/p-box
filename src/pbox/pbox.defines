@@ -32,3 +32,5 @@
 
 // RV64 specific instructions
 `endif
+
+`define PSIMDSTAGES_TOTAL 3

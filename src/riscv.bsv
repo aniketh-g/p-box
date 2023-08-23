@@ -197,9 +197,9 @@ module mkriscv#(Bit#(`vaddr) resetpc, parameter Bit#(`xlen) hartid)(Ifc_riscv);
     Ifc_mbox mbox <- mkmbox(0);
     FIFOF#(Bit#(`xlen)) ff_mbox_out <- mkSizedBypassFIFOF(`isb_s3s4 );
   `endif
-  `ifdef muldiv
+  `ifdef psimd
     Ifc_pbox pbox <- mkpbox(0);
-    FIFOF#(Bit#(`xlen)) ff_pbox_out <- mkSizedBypassFIFOF(`isb_s3s4 );
+    FIFOF#(PBoxOutput) ff_pbox_out <- mkSizedBypassFIFOF(`isb_s3s4 );
   `endif
   `ifdef debug
     /*doc:wire: */
@@ -259,8 +259,8 @@ module mkriscv#(Bit#(`vaddr) resetpc, parameter Bit#(`xlen) hartid)(Ifc_riscv);
     mkConnection(ff_mbox_out, stage4.s4_mbox.rx_mbox_output);
   `endif
   `ifdef psimd
-    mkConnection(stage3.psimd.ma_pbox_ready,pbox.mv_ready);
-    mkConnection(stage3.psimd.mv_pbox_inputs, pbox._start);
+    mkConnection(stage3.psimd.ma_pbox_ready,pbox.pbox_ready);
+    mkConnection(stage3.psimd.mv_pbox_inputs, pbox.ma_inputs);
     mkConnection(pbox.tx_output, ff_pbox_out);
     mkConnection(ff_pbox_out, stage4.s4_pbox.rx_pbox_output);
   `endif 

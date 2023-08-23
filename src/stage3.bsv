@@ -89,12 +89,12 @@ import scoreboard     :: * ;      // implements the scoreboard
 `endif
 `ifdef psimd
   import pbox          :: * ;
+  import pbox_types    :: * ;
 `endif
 
 `include "ccore_params.defines"  // for core parameters
 `include "Logger.bsv"         // for logging display statements.
 `include "trap.defines"           // for cause values of traps captured in this stage
-
 
 interface Ifc_stage3;
   /*doc:subifc: This interface contains generic methods like epoch updates, flush from this stage,
@@ -257,7 +257,7 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
   /*doc:wire: holds value of operand3 after checking the bypass signals from downstream isbs and
   * regfile*/
   Wire#(Bit#(`xlen)) wr_fwd_op3 <- mkWire();
-  Wire#(Input_Packet) wr_float_inputs <- mkWire();
+  Wire#(ccore_types::Input_Packet) wr_float_inputs <- mkWire();
 `endif
   /*doc:wire: after checking the bypass signals from downstream ISBs, this wire indicates if the
   * latest value of operand1 is available or not. If not then we need stall on instructions waiting
@@ -899,7 +899,7 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
       common_pkt.insttype = PSIMD;
       `logLevel( stage3, 0, $format("[%2d]STAGE3: PSIMD Op received",hartid))
       if (wr_op1_avail && wr_op2_avail) begin
-        wr_psimd_inputs <= PBoxIn{rs1: wr_fwd_op1, rs2: wr_fwd_op2, instr: truncate(meta.funct)                                                   
+        wr_psimd_inputs <= PBoxIn{rs1: wr_fwd_op1, rs2: wr_fwd_op2, instr: extend(meta.funct)                                                   
                                   // `ifdef RV64 , wordop: meta.word32 `endif };
                                                                               };
         `logLevel( stage3, 0, $format("[%2d]STAGE3: PSIMD op offloaded",hartid))
@@ -960,7 +960,7 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
     common_pkt.insttype = FLOAT;
     `logLevel( stage3, 0, $format("[%2d]STAGE3: FLOAT Op received",hartid))
     if (wr_op1_avail && wr_op2_avail && wr_op3_avail) begin
-      wr_float_inputs <= Input_Packet{operand1: truncate(wr_fwd_op1), operand2: truncate(wr_fwd_op2), operand3:truncate(wr_fwd_op3),
+      wr_float_inputs <= ccore_types::Input_Packet{operand1: truncate(wr_fwd_op1), operand2: truncate(wr_fwd_op2), operand3:truncate(wr_fwd_op3),
                                opcode: (meta.funct[6:3]), funct3: truncate(meta.funct), 
                                funct7: wr_op3.data[11:5], imm: wr_op3.data[1:0],issp: issp 
                               };

@@ -24,6 +24,7 @@ import csrbox       :: * ;
 `endif
 `ifdef psimd
 import pbox         :: * ;
+import pbox_types   :: * ;
 `endif
 `include "Logger.bsv"
 
@@ -201,9 +202,15 @@ method Action ma_pbox_ready(Bit#(1) rdy);
 endinterface: Ifc_s3_psimd
 `endif
 
+`ifdef psimd
+  interface Ifc_s4_psimd;
+    interface RXe#(PBoxOutput) rx_pbox_output;
+  endinterface:Ifc_s4_psimd
+`endif
+
 `ifdef spfpu
 interface Ifc_s3_float;
-    method Input_Packet mv_fbox_inputs;
+    method ccore_types::Input_Packet mv_fbox_inputs;
     (*always_ready, always_enabled*)
   /*doc:method: This method captures the ready signals from the fbox unit*/
   method Action ma_fbox_ready(Bit#(1) rdy);
