@@ -1,9 +1,9 @@
 `include "pbox.defines"
 import pbox_types     :: * ;
-import ccore_types    :: * ;
+// import ccore_types    :: * ;
 `include "Zbpbo.bsv"
 `include "Zpn.bsv"
-`include "Zpsfoperand.bsv"
+// `include "Zpsfoperand.bsv"
 
 
 /*doc: function: The top function where depending on the instruction the
