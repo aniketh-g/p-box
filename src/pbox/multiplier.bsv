@@ -5,23 +5,22 @@ endinterface : Ifc_Mult
 
 typedef enum {Idle, Mult, Result, Ready} State deriving (Bits, Eq);
 
-module mkMult(Ifc_Mult#(16));
-    // provisos(
-    //     Mul#(nlen, 2, TAdd#(TDiv#(nlen, 2), TAdd#(TDiv#(nlen, 2), TAdd#(TDiv#(nlen, 2), TDiv#(nlen, 2))))),
-    //     Add#(a__, TDiv#(nlen, 2), TMul#(TDiv#(nlen, 2), 2))
-    // );
+module mkMult(Ifc_Mult#(m))
+    provisos(
+        Add#(a__, TMul#(TDiv#(m, 2), 2), TMul#(m, 2)), Add#(b__, TDiv#(m, 2), TMul#(TDiv#(m, 2), 2))
+    );
 
 
     Reg#(State) state <- mkReg(Idle);
 
-    Reg#(Bit#(8)) inpA0 <- mkReg(0);
-    Reg#(Bit#(8)) inpA1 <- mkReg(0);
-    Reg#(Bit#(8)) inpB0 <- mkReg(0);
-    Reg#(Bit#(8)) inpB1 <- mkReg(0);
+    Reg#(Bit#(TDiv#(m,2))) inpA0 <- mkReg(0);
+    Reg#(Bit#(TDiv#(m,2))) inpA1 <- mkReg(0);
+    Reg#(Bit#(TDiv#(m,2))) inpB0 <- mkReg(0);
+    Reg#(Bit#(TDiv#(m,2))) inpB1 <- mkReg(0);
 
-    Reg#(Bit#(32)) answer <- mkReg(0);
+    Reg#(Bit#(TMul#(m,2))) answer <- mkReg(0);
 
-    Ifc_Mult#(8) dadda_mult <- mkDadda;
+    Ifc_Mult#(TDiv#(m,2)) dadda_mult <- mkDadda;
 
     rule dadda(state == Mult);
         $display("mkMult rule dadda:\tinpA0=%d,inpA1=%d,inpB0=%d,inpB1=%d\n", inpA0, inpA1, inpB0, inpB1);
@@ -29,14 +28,14 @@ module mkMult(Ifc_Mult#(16));
         state <= Result;
     endrule
 
-    method Action start(Bit#(16) inpA, Bit#(16) inpB);
-        inpA1 <= inpA[15:8];
-        inpA0 <= inpA[7:0];
-        inpB1 <= inpB[15:8];
-        inpB0 <= inpB[7:0];
+    method Action start(Bit#(m) inpA, Bit#(m) inpB);
+        inpA1 <= inpA[valueOf(m)-1:valueOf(TDiv#(m,2))];
+        inpA0 <= inpA[valueOf(TDiv#(m,2))-1:0];
+        inpB1 <= inpB[valueOf(m)-1:valueOf(TDiv#(m,2))];
+        inpB0 <= inpB[valueOf(TDiv#(m,2))-1:0];
         state <= Mult;
     endmethod
-    method ActionValue#(Bit#(TMul#(16,2))) result;
+    method ActionValue#(Bit#(TMul#(m,2))) result;
         let ans <- dadda_mult.result();
         state <= Idle;
         return {'0, ans};
