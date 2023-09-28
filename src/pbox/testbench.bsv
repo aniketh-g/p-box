@@ -11,12 +11,11 @@ module mkTest(Empty);
     (* descending_urgency = "multiply, multiplier_initialize" *)
     rule idle(tbstate == Idle);
         tbstate <= Multiply;
-        $display("Dadda output for 255*123 = %d", dadda_8(255, 123));
         $display("TB Idle");
     endrule
     rule multiply(tbstate == Multiply);
         $display("TB multiply");
-        multiplier.start(16'd7, 16'd3);
+        multiplier.start(16'd65535, 16'd65532);
         tbstate <= Next;
     endrule
 

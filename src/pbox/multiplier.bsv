@@ -68,33 +68,38 @@ module mkMult(Ifc_Mult#(m))
         endcase
 
         if(counter == 2'b11) begin state <= AddPPs; end
-        $display("mkMult rule; Mux (state %d)", state);
-        $display("\tcounter = %d", counter);
-        $display("\tpp1=%d, pp2=%d, pp3=%d, pp4=%d", pp1, pp2, pp3, pp4);
+        // $display("mkMult rule; Mux (state %b)", state);
+        // $display("\tcounter = %b", counter);
+        // $display("\npp1=%b\npp2=%b\npp3=%b\npp4=%b\n", {16'b0,pp1}, {8'b0,pp2,8'b0}, {8'b0,pp3,8'b0}, {pp4,16'b0});
     endrule : multiplex
 
     rule addPPs (state == AddPPs);
-        $display("mkMult rule; AddPs (state %d)", state);
-        $display("\tpp1=%d, pp2=%d, pp3=%d, pp4=%d, fp=%d", pp1, pp2, pp3, pp4, fp);
-        fp <= {pp4[15:8],
-               pp4[7: 0] + pp2[15:8] + pp3[15:8],
-               pp1[15:8] + pp2[7: 0] + pp3[7: 0],
-               pp1[7: 0]};
+
+        Bit#(9) adder_1 = {0, pp1[15:8]} + {0, pp2[7: 0]} + {0, pp3[7: 0]};
+        Bit#(9) adder_2 = {0, adder_1[8]} + {0, pp4[7: 0]} + {0, pp2[15:8]} + {0, pp3[15:8]};
+        Bit#(8) adder_3 = {0, adder_2[8]} + {0, pp4[15:8]};
+        Bit#(32) ans = {adder_3, adder_2[7:0], adder_1[7:0], pp1[7:0]};
+
+        fp <= ans;
         state <= Ready;
+        // $display("mkMult rule; AddPs (state %b)", state);
+        // $display("\npp1=%b\npp2=%b\npp3=%b\npp4=%b", {16'b0,pp1}, {8'b0,pp2,8'b0}, {8'b0,pp3,8'b0}, {pp4,16'b0});
+        $display("Multiplier ans=%b=%d", ans, ans);
     endrule : addPPs
 
     method Action start(Bit#(m) inpA, Bit#(m) inpB) if(state == Idle);
-        $display("mkMult method start; Idle (state %d)", state);
         aH <= inpA[valueOf(m)-1:valueOf(TDiv#(m,2))];
         aL <= inpA[valueOf(TDiv#(m,2))-1:0];
         bH <= inpB[valueOf(m)-1:valueOf(TDiv#(m,2))];
         bL <= inpB[valueOf(TDiv#(m,2))-1:0];
         state <= Mux;
-        $display("\tinpA = %d, inpB = %d", inpA, inpB);
+        // $display("mkMult method start; Idle (state %b)", state);
+        // $display("\tinpA = %b, inpB = %b", inpA, inpB);
+        // $display("\taH=%b, aL=%b; bH=%b, bL=%b\n", inpA[15:8], inpA[7:0], inpB[15:8], inpB[7:0]);
     endmethod
 
     method ActionValue#(Bit#(TMul#(m,2))) result if(state == Ready);
-        $display("mkMult method result; AddPPs (state %d)", state);
+        // $display("mkMult method result; AddPPs (state %b)", state);
         counter <= 0;
         state <= Idle;
         return fp;
