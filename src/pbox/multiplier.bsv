@@ -1,3 +1,9 @@
+package multiplier;
+export multiplier::*;
+import dadda_8 :: *;
+
+// `define debug
+
 interface Ifc_Mult#(numeric type n);
     method Action start(Bit#(n) inpA, Bit#(n) inpB);
     method ActionValue#(Bit#(TMul#(n, 2))) result;
@@ -68,9 +74,12 @@ module mkMult(Ifc_Mult#(m))
         endcase
 
         if(counter == 2'b11) begin state <= AddPPs; end
-        // $display("mkMult rule; Mux (state %b)", state);
-        // $display("\tcounter = %b", counter);
-        // $display("\npp1=%b\npp2=%b\npp3=%b\npp4=%b\n", {16'b0,pp1}, {8'b0,pp2,8'b0}, {8'b0,pp3,8'b0}, {pp4,16'b0});
+        
+        `ifdef debug
+        $display("mkMult rule; Mux (state %b)", state);
+        $display("\tcounter = %b", counter);
+        $display("\npp1=%b\npp2=%b\npp3=%b\npp4=%b\n", {16'b0,pp1}, {8'b0,pp2,8'b0}, {8'b0,pp3,8'b0}, {pp4,16'b0});
+        `endif
     endrule : multiplex
 
     rule addPPs (state == AddPPs);
@@ -82,8 +91,11 @@ module mkMult(Ifc_Mult#(m))
 
         fp <= ans;
         state <= Ready;
-        // $display("mkMult rule; AddPs (state %b)", state);
-        // $display("\npp1=%b\npp2=%b\npp3=%b\npp4=%b", {16'b0,pp1}, {8'b0,pp2,8'b0}, {8'b0,pp3,8'b0}, {pp4,16'b0});
+
+        `ifdef debug
+        $display("mkMult rule; AddPs (state %b)", state);
+        $display("\npp1=%b\npp2=%b\npp3=%b\npp4=%b", {16'b0,pp1}, {8'b0,pp2,8'b0}, {8'b0,pp3,8'b0}, {pp4,16'b0});
+        `endif
         $display("Multiplier ans=%b=%d", ans, ans);
     endrule : addPPs
 
@@ -93,16 +105,19 @@ module mkMult(Ifc_Mult#(m))
         bH <= inpB[valueOf(m)-1:valueOf(TDiv#(m,2))];
         bL <= inpB[valueOf(TDiv#(m,2))-1:0];
         state <= Mux;
-        // $display("mkMult method start; Idle (state %b)", state);
-        // $display("\tinpA = %b, inpB = %b", inpA, inpB);
-        // $display("\taH=%b, aL=%b; bH=%b, bL=%b\n", inpA[15:8], inpA[7:0], inpB[15:8], inpB[7:0]);
+        `ifdef debug
+        $display("mkMult method start; Idle (state %b)", state);
+        $display("\tinpA = %b, inpB = %b", inpA, inpB);
+        $display("\taH=%b, aL=%b; bH=%b, bL=%b\n", inpA[15:8], inpA[7:0], inpB[15:8], inpB[7:0]);
+        `endif
     endmethod
 
     method ActionValue#(Bit#(TMul#(m,2))) result if(state == Ready);
-        // $display("mkMult method result; AddPPs (state %b)", state);
+        `ifdef debug $display("mkMult method result; AddPPs (state %b)", state); `endif
         counter <= 0;
         state <= Idle;
         return fp;
     endmethod
 
 endmodule : mkMult
+endpackage : multiplier

@@ -2,6 +2,7 @@ package pbox_types;
 
 typedef 8 BYTELEN;
 typedef Bit#(BYTELEN) Byte;
+`define RV64
 //usage of #define for xlen param - tbd
 `ifdef RV64
 
@@ -29,5 +30,10 @@ typedef struct {
   Bool valid;       // A bool indicating that the data is valid.
   Bit#(XLEN) data;  // The computed data
 } PBoxOut deriving (Bits, Eq, FShow);
+
+interface Ifc_binaryOp_PBox;
+  method Action writeInput(Bit#(7) funct7, Bit#(XLEN) rs1, Bit#(XLEN) rs2);
+  method ActionValue#(PBoxOut) getOutput;
+endinterface
 
 endpackage: pbox_types

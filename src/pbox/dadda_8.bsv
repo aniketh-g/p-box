@@ -1,3 +1,5 @@
+package dadda_8;
+export dadda_8::*;
 // 1-bit adders
 
 function Tuple2#(Bit#(1), Bit#(1)) fadd_1(Bit#(1) a, Bit#(1) b, Bit#(1) cin); return tuple2(a^b^cin, (a&b)|(a&cin)|(b&cin)); endfunction
@@ -164,3 +166,4 @@ function Bit#(16) dadda_8(Bit#(8) inpA, Bit#(8) inpB);
     return y;
 
 endfunction
+endpackage : dadda_8

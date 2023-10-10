@@ -1,6 +1,4 @@
-`include "multiplier.bsv"
-`include "dadda_8.bsv"
-
+import multiplier::*;
 typedef enum {Idle, Multiply, Next, Finish} TbState deriving (Bits, Eq);
 
 (*synthesize*)
