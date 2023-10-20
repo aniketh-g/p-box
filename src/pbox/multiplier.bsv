@@ -11,7 +11,7 @@ endinterface : Ifc_Mult
 
 typedef enum {Idle, Mux, AddPPs, Ready} MultState deriving (Bits, Eq);
 
-module mkMult(Ifc_Mult#(m))
+module mkMult16(Ifc_Mult#(m))
     provisos(
         Add#(a__, TMul#(TDiv#(m, 2), 2), TMul#(m, 2)), Add#(b__, TDiv#(m, 2), TMul#(TDiv#(m, 2), 2)),  Div#(m, 2, 8), Add#(m, 0, 16)
     );
@@ -76,7 +76,7 @@ module mkMult(Ifc_Mult#(m))
         if(counter == 2'b11) begin state <= AddPPs; end
         
         `ifdef debug
-        $display("mkMult rule; Mux (state %b)", state);
+        $display("mkMult16 rule; Mux (state %b)", state);
         $display("\tcounter = %b", counter);
         $display("\npp1=%b\npp2=%b\npp3=%b\npp4=%b\n", {16'b0,pp1}, {8'b0,pp2,8'b0}, {8'b0,pp3,8'b0}, {pp4,16'b0});
         `endif
@@ -93,7 +93,7 @@ module mkMult(Ifc_Mult#(m))
         state <= Ready;
 
         `ifdef debug
-        $display("mkMult rule; AddPs (state %b)", state);
+        $display("mkMult16 rule; AddPs (state %b)", state);
         $display("\npp1=%b\npp2=%b\npp3=%b\npp4=%b", {16'b0,pp1}, {8'b0,pp2,8'b0}, {8'b0,pp3,8'b0}, {pp4,16'b0});
         `endif
         $display("Multiplier ans=%b=%d", ans, ans);
@@ -106,18 +106,18 @@ module mkMult(Ifc_Mult#(m))
         bL <= inpB[valueOf(TDiv#(m,2))-1:0];
         state <= Mux;
         `ifdef debug
-        $display("mkMult method start; Idle (state %b)", state);
+        $display("mkMult16 method start; Idle (state %b)", state);
         $display("\tinpA = %b, inpB = %b", inpA, inpB);
         $display("\taH=%b, aL=%b; bH=%b, bL=%b\n", inpA[15:8], inpA[7:0], inpB[15:8], inpB[7:0]);
         `endif
     endmethod
 
     method ActionValue#(Bit#(TMul#(m,2))) result if(state == Ready);
-        `ifdef debug $display("mkMult method result; AddPPs (state %b)", state); `endif
+        `ifdef debug $display("mkMult16 method result; AddPPs (state %b)", state); `endif
         counter <= 0;
         state <= Idle;
         return fp;
     endmethod
 
-endmodule : mkMult
+endmodule : mkMult16
 endpackage : multiplier

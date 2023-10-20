@@ -32,7 +32,7 @@ typedef struct {
 } PBoxOut deriving (Bits, Eq, FShow);
 
 interface Ifc_binaryOp_PBox;
-  method Action writeInput(Bit#(7) funct7, Bit#(XLEN) rs1, Bit#(XLEN) rs2);
+  method Action writeInput(Bit#(7) funct7, Bit#(3) funct3, Bit#(XLEN) rs1, Bit#(XLEN) rs2);
   method ActionValue#(PBoxOut) getOutput;
 endinterface
 

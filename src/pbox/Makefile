@@ -6,6 +6,13 @@ testmultiplier:
 	@bsc -e mkTest mkTest.v
 	@./a.out
 
+.PHONY: testUSmultiplier
+testUSmultiplier: 
+	@bsc usmultiplier.bsv
+	@bsc -verilog usmultiplierTB.bsv
+	@bsc -e mkTest mkTest.v
+	@./a.out
+
 .PHONY: testmul16
 testmul16:
 	@bsc pbox_types.bsv
