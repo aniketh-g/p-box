@@ -11,8 +11,8 @@ module mkTest(Empty);
     rule idle(tbstate == Idle);
         tbstate <= Next;
         `ifdef isModule usMult.start(-8'd46, 4'd7, 1'b1);`endif
-        `ifndef
-        isModule let ans = usMult(-8'd89, -4'd6, 1'b1);
+        `ifndef isModule
+        let ans = usMult(-8'd89, -4'd6, 1'b1);
         $display("ans = %b = %d = -%d", ans, ans, ~ans+1);
         `endif
     endrule
