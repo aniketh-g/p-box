@@ -8,7 +8,7 @@ module mkTest(Empty);
 
     rule idle(tbstate == Idle);
         tbstate <= Next;
-        usMult.start(8'd127, -4'd8, 1'b1);
+        usMult.start(-8'd46, 4'd7, 1'b1);
     endrule
     rule printans ( tbstate == Next );
         let ans <- usMult.result;
