@@ -6,7 +6,7 @@ export usmultiplier::*;
 
 function Bit#(x) gen_carry(Bit#(x) snew_prev, Bit#(x) s, Bit#(x) cin);
     Bit#(x) cout = 0;
-    for(Integer i=0; i<valueOf(x)-1; i=i+1)
+    for(Integer i=0; i<valueOf(x); i=i+1)
         if(i != valueOf(x) - 1) cout[i] = (snew_prev[i+1]&s[i])|(snew_prev[i+1]&cin[i])|(s[i]&cin[i]);
         else                    cout[i] = (s[i]&cin[i]);
     return cout;

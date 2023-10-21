@@ -14,9 +14,9 @@ module mkTest(Empty);
     endrule
     rule multiply(tbstate == Compute);
         $display("TB multiply");
-        mul16.writeInput(7'b1001011, 3'b000,
-                        { 16'd3321, -16'd2124,  16'd7432, -16'd7012},
-                        { 16'd9123, -16'd9523, -16'd3043, -16'd9561});
+        mul16.writeInput(7'b0011101, 3'b001,
+                        { 16'd6524, -16'd4312,  16'd9214, -16'd8319},
+                        { 16'd2842, -16'd5318, -16'd3034, -16'd7912});
         tbstate <= Next;
     endrule
 
@@ -24,8 +24,9 @@ module mkTest(Empty);
         let ansa <- mul16.getOutput();
         tbstate <= Finish;
         $display("TB Next; ansa = %b", ansa.data);
-        $display("ansa.data = %x = [0...0],%d,%d = %d, %d, %d, %d", ansa.data, ansa.data[31:16], ansa.data[15:0], ansa.data[63:48], ansa.data[47:32], ansa.data[31:16], ansa.data[15:0]);
-        $display("\t\t\t\t\t\t   = -%d,-%d,-%d,-%d", 1+~ansa.data[63:48], 1+~ansa.data[47:32], 1+~ansa.data[31:16], 1+~ansa.data[15:0]);
+        // $display("ansa.data = %x = [0...0],%d,%d = %d, %d, %d, %d", ansa.data, ansa.data[31:16], ansa.data[15:0], ansa.data[63:48], ansa.data[47:32], ansa.data[31:16], ansa.data[15:0]);
+        // $display("\t\t\t\t\t\t   = -%d,-%d,-%d,-%d", 1+~ansa.data[63:48], 1+~ansa.data[47:32], 1+~ansa.data[31:16], 1+~ansa.data[15:0]);
+        $display("ans = %d, %d\n    = -%d, -%d", ansa.data[63:32], ansa.data[31:0], 1+~ansa.data[63:32], 1+~ansa.data[31:0]);
     endrule : display_ans
 endmodule : mkTest
 
