@@ -6,7 +6,7 @@ typedef enum {Idle, Compute, Next, Finish} TbState deriving (Bits, Eq);
 (*synthesize*)
 module mkTest(Empty);
     Reg#(TbState) tbstate <- mkReg(Idle);
-    Ifc_binaryOp_PBox mul16 <- mkMul16;
+    Ifc_binaryOp_PBox mul_box <- mkMulIns;
 
     rule idle(tbstate == Idle);
         tbstate <= Compute;
@@ -14,14 +14,14 @@ module mkTest(Empty);
     endrule
     rule multiply(tbstate == Compute);
         $display("TB multiply");
-        mul16.writeInput(7'b0011101, 3'b001,
+        mul_box.writeInput(7'b0011101, 3'b001,
                         { 16'd6524, -16'd4312,  16'd9214, -16'd8319},
                         { 16'd2842, -16'd5318, -16'd3034, -16'd7912});
         tbstate <= Next;
     endrule
 
     rule display_ans ( tbstate == Next );
-        let ansa <- mul16.getOutput();
+        let ansa <- mul_box.getOutput();
         tbstate <= Finish;
         $display("TB Next; ansa = %b", ansa.data);
         // $display("ansa.data = %x = [0...0],%d,%d = %d, %d, %d, %d", ansa.data, ansa.data[31:16], ansa.data[15:0], ansa.data[63:48], ansa.data[47:32], ansa.data[31:16], ansa.data[15:0]);

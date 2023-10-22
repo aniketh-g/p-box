@@ -14,8 +14,8 @@ testUSmultiplier:
 	@bsc -e mkTest mkTest.v
 	@./a.out +RTS -K40000M +RTS
 
-.PHONY: testmul16
-testmul16:
+.PHONY: testmul
+testmul:
 	@bsc pbox_types.bsv
 	@bsc dadda_8.bsv
 	@bsc multiplier.bsv

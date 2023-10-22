@@ -6,7 +6,7 @@ required extension.
 
 import pbox_types     :: * ;
 import multiplier     :: * ;
-import usmultiplier     :: * ;
+import usmultiplier   :: * ;
 
 `define debug
 
@@ -23,11 +23,11 @@ function Tuple2#(Bit#(1), Bit#(32)) q31add(Bit#(32) a, Bit#(32)  b);
     return tuple2(ov, sum);
 endfunction
 
-typedef enum {Idle, Compute, Finish} Mul16State deriving (Bits, Eq);
+typedef enum {Idle, Compute, Finish} MulState deriving (Bits, Eq);
 
-module mkMul16(Ifc_binaryOp_PBox);
+module mkMulIns(Ifc_binaryOp_PBox);
 
-    Reg#(Mul16State) state         <- mkReg(Idle);
+    Reg#(MulState) state           <- mkReg(Idle);
     Reg#(Bit#(XLEN)) rv1           <- mkReg(0);
     Reg#(Bit#(XLEN)) rv2           <- mkReg(0);
     Reg#(Bit#(XLEN)) rd            <- mkReg(0);
@@ -36,22 +36,24 @@ module mkMul16(Ifc_binaryOp_PBox);
     Reg#(Bit#(1))    ov            <- mkReg(0);
     Reg#(Bit#(XLEN)) result        <- mkReg(0);
     Reg#(Bool)       valid         <- mkReg(False);
+    Bit#(1) is16bitMulAcc = (~f7[6] & f7[4] & f7[3] & f7[2] & ~f7[1]) | (~f7[6] & f7[5] & ~f7[4] & f7[2]) | (~f7[6] & f7[5] & f7[2] & ~f7[1]) | (~f7[6] & f7[5] & f7[2] & ~f7[0]) | (f7[6] & ~f7[5] & ~f7[4] & f7[2] & ~f7[1]) | (f7[6] & ~f7[5] & ~f7[3] & f7[2] & ~f7[1]) | (f7[6] & ~f7[5] & f7[2] & f7[1] & ~f7[0]) | (~f7[6] & f7[2] & ~f7[1] & ~f7[0]);
+    Bit#(1) is16bitMul = (f3[0] & is16bitMulAcc) | (~f3[0]);
 
-    rule compute (state == Compute);
+    rule compute16 ((is16bitMul == 1) && state == Compute);
         `ifdef debug $display("State = %d", state); `endif
         `ifdef debug $display("rv1 = %x = %d,%d,%d,%d\nrv2 = %x = %d,%d,%d,%d\n",
                   rv1, rv1[63:48], rv1[47:32], rv1[31:16], rv1[15:0],
                   rv2, rv2[63:48], rv2[47:32], rv2[31:16], rv2[15:0]); `endif
 
-        Bit#(16) op1_w0 = rv1[15: 0];
-        Bit#(16) op1_w1 = rv1[31:16];
-        Bit#(16) op1_w2 = rv1[47:32];
-        Bit#(16) op1_w3 = rv1[63:48];
+        Bit#(16) mul0_ip1 = rv1[15: 0];
+        Bit#(16) mul1_ip1 = rv1[31:16];
+        Bit#(16) mul2_ip1 = rv1[47:32];
+        Bit#(16) mul3_ip1 = rv1[63:48];
 
-        Bit#(16) op2_w0 = rv2[15: 0];
-        Bit#(16) op2_w1 = rv2[31:16];
-        Bit#(16) op2_w2 = rv1[47:32];
-        Bit#(16) op2_w3 = rv1[63:48];
+        Bit#(16) mul0_ip2 = rv2[15: 0];
+        Bit#(16) mul1_ip2 = rv2[31:16];
+        Bit#(16) mul2_ip2 = rv1[47:32];
+        Bit#(16) mul3_ip2 = rv1[63:48];
 
         Bit#(1) isSMUL = 0;
 
@@ -60,60 +62,55 @@ module mkMul16(Ifc_binaryOp_PBox);
         Bit#(1) isMul16 = ~f3[0];
         Bit#(1) isMul16A32 = f3[0]&((~f7[6] & ~f7[1]) | (~f7[6] & ~f7[3]) | (~f7[6] & ~f7[0]));
         Bit#(1) isMul16A64 = f3[0]&((f7[3] & f7[1] & f7[0]) | (f7[6]));
-
         if(isMul16 == 1) begin
             isSMUL  = ~(f7[4]&f7[3]);
             Bit#(1) isX  = (f7[4] & f7[0])|(~f7[4] & f7[3]);
 
             if (isX == 1) begin
-                op2_w0 = rv2[31:16];
-                op2_w1 = rv2[15:0];
-                op2_w2 = rv2[63:48];
-                op2_w3 = rv2[47:32];
+                mul0_ip2 = rv2[31:16];
+                mul1_ip2 = rv2[15:0];
+                mul2_ip2 = rv2[63:48];
+                mul3_ip2 = rv2[47:32];
             end
         end
-        else if(isMul16A32 == 1) begin
-            `ifdef debug $display("isMul16A32 == 1"); `endif
+        else if((isMul16A32|isMul16A64) == 1) begin
+            `ifdef debug $display("isMul16A32 %b, isMul16A64 %b", isMul16A32, isMul16A64); `endif
             isSMUL = 1;
             // Cross Inputs?
-            // Whether single multiplication or double multiplication in each word
-            // 1's        : 4,12,20,45,53,61
-            // Don't cares: 0,1,2,3,5,6,7,8,9,10,11,13,14,15,16,17,18,19,24,25,26,27,30,31,32,33,34,35,40,41,42,43,48,49,50,51,55,56,57,58,59,63,64,65,66,67,71,72,73,74,75,79,80,81,82,83,87,88,89,90,91,92,93,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127
-            Bit#(1) isSingle   = (~f7[5] & ~f7[4]) | (~f7[5] & ~f7[3]) | (~f7[4] & f7[3] & f7[0]) | (f7[5] & f7[4] & f7[0]);
-            // If single, whether straight or cross
-            // 1's        : 4,45
-            // Don't cares: 0,1,2,3,5,6,7,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50,51,52,54,55,56,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127
-            // Bit#(1) isBot      = (~f7[4] & ~f7[3]) | (~f7[4] & f7[0]);
-            Bit#(1) isDiag     = (~f7[5] & f7[3]) | (~f7[3] & f7[0]);
-            Bit#(1) isTop      = (f7[4] & f7[3]) | (~f7[5] & f7[4]);
-            // If double, whether straight or cross
-            // 1's        : 29,37,39,60,62
-            // Don't cares: 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,40,41,42,43,45,47,48,49,50,51,53,55,56,57,58,59,61,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127
-            // (Checked only if isSingle == 0)
-            Bit#(1) isX        = (f7[0]) | (f7[5] & f7[4] & f7[3]);
+            Bit#(1) isX           = (~f7[6] & ~f7[5] & ~f7[4] & f7[3]) | (f7[5] & f7[4] & f7[3] & ~f7[0]) | (~f7[5] & f7[4] & f7[0]) | (~f7[6] & ~f7[3] & f7[0]) | (~f7[5] & f7[3] & f7[1]);
+            // Single multiplication or double?
+            Bit#(1) isSingle      = (~f7[5] & ~f7[4] & ~f7[1] & ~f7[0]) | (~f7[5] & ~f7[3] & ~f7[1] & ~f7[0]) | (~f7[6] & ~f7[4] & f7[3] & ~f7[1] & f7[0]) | (f7[5] & f7[4] & f7[0]);
+            Bit#(1) isInvStraight = (f7[5] & f7[4] & f7[3] & f7[0]) | (~f7[5] & f7[4] & ~f7[3] & ~f7[1] & ~f7[0]) | (~f7[5] & ~f7[4] & ~f7[3] & f7[0]);
             
-            `ifdef debug $display("isSingle %b, isDiag %b, isTop %b, isX %b", isSingle, isDiag, isTop, isX); `endif
+            `ifdef debug $display("isSingle %b, isInvStraight %b, isX %b", isSingle, isInvStraight, isX); `endif
 
-            // If Diag or X, cross only second input
-            if(((~isSingle & isX) | (isSingle & isDiag) | isTop) == 1) begin
-                op2_w0 = rv2[31:16];
-                op2_w1 = rv2[15:0];
-                op2_w2 = rv2[63:48];
-                op2_w3 = rv2[47:32];
+            // If isX, cross only second input
+            if((isX | isInvStraight) == 1) begin
+                mul0_ip2 = rv2[31:16];
+                mul1_ip2 = rv2[15:0];
+                mul2_ip2 = rv2[63:48];
+                mul3_ip2 = rv2[47:32];
             end
-            // If isTop, cross first input as well
-            if((isSingle & isTop) == 1) begin
-                op1_w0 = rv1[31:16];
-                op1_w1 = rv1[15:0];
-                op1_w2 = rv1[63:48];
-                op1_w3 = rv1[47:32];
+            // If isInvStraight, cross first input as well
+            if(isInvStraight == 1) begin
+                mul0_ip1 = rv1[31:16];
+                mul1_ip1 = rv1[15:0];
+                mul2_ip1 = rv1[63:48];
+                mul3_ip1 = rv1[47:32];
+            end
+            Bit#(1) isSMAL = (f7[1] & f7[0]);
+            if((isMul16A64 & isSMAL) == 1) begin
+                mul0_ip1 = rv2[63:48];
+                mul0_ip2 = rv2[47:32];
+                mul1_ip1 = rv2[31:16];
+                mul1_ip2 = rv2[15:0];
             end
         end
         // Compute Products
-        let mul0 = usMult(op1_w0, op2_w0, isSMUL);
-        let mul1 = usMult(op1_w1, op2_w1, isSMUL);
-        let mul2 = usMult(op1_w2, op2_w2, isSMUL);
-        let mul3 = usMult(op1_w3, op2_w3, isSMUL);
+        let mul0 = usMult(mul0_ip1, mul0_ip2, isSMUL);
+        let mul1 = usMult(mul1_ip1, mul1_ip2, isSMUL);
+        let mul2 = usMult(mul2_ip1, mul2_ip2, isSMUL);
+        let mul3 = usMult(mul3_ip1, mul3_ip2, isSMUL);
 
         `ifdef debug $display("w0 = %b = %d = -%d\nw1 = %b = %d = -%d", mul0, mul0, ~mul0+1, mul1, mul1, ~mul1+1); `endif
         `ifdef debug $display("w2 = %b = %d = -%d\nw3 = %b = %d = -%d", mul2, mul2, ~mul2+1, mul3, mul3, ~mul3+1); `endif
@@ -141,7 +138,7 @@ module mkMul16(Ifc_binaryOp_PBox);
 
             if(isSub == 1) begin
                 mul0 = ~mul0 + 1;
-                mul2 = ~mul0 + 1;
+                mul2 = ~mul2 + 1;
             end
             if(isiSub == 1)begin
                 mul1 = ~mul1 + 1;
@@ -173,7 +170,30 @@ module mkMul16(Ifc_binaryOp_PBox);
             valid <= True;
             state <= Finish;
         end
-    endrule : compute
+        else if(isMul16A64 == 1) begin
+            Bit#(1) isAcc64 = (~f7[5] & f7[0]) | (~f7[5] & f7[1]);
+            Bit#(1) ism1_neg = (f7[4]) | (f7[3] & ~f7[1]);
+            Bit#(1) ism0_neg = (f7[4] & ~f7[0]);
+
+            if(~isAcc64 == 1) begin
+                result <= rd+signExtend(mul0)+signExtend(mul1);
+                state <= Finish;
+            end
+            else if(isAcc64 == 1) begin
+                if(ism1_neg == 1) begin
+                    mul1 = ~mul1+1;
+                    mul3 = ~mul3+1;
+                end
+                if(ism0_neg == 1) begin
+                    mul0 = ~mul0+1;
+                    mul0 = ~mul0+1;
+                end
+                result <= rd+signExtend(mul0)+signExtend(mul1)+signExtend(mul2)+signExtend(mul3);
+                state <= Finish;
+            end
+        end
+    endrule : compute16
+
 
     method Action writeInput(Bit#(7) funct7, Bit#(3) funct3, Bit#(XLEN) rs1, Bit#(XLEN) rs2) if (state==Idle);
         rv1           <= rs1;
