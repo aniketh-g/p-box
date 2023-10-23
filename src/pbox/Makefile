@@ -1,5 +1,5 @@
-.PHONY: testmultiplier
-testmultiplier: 
+.PHONY: testnby2multiplier
+testnby2multiplier: 
 	@bsc dadda_8.bsv
 	@bsc multiplier.bsv
 	@bsc -verilog testbench.bsv
@@ -25,6 +25,12 @@ testmul:
 	@bsc -verilog Zpsfoperand_TB.bsv +RTS -K40000M -RTS
 	@bsc -e mkTest mkTest.v +RTS -K40000M -RTS
 	@./a.out
+
+.PHONY: testcompute
+testcompute:
+	@bsc pbox_types.bsv
+	@bsc usmultiplier.bsv
+	@bsc compute.bsv
 
 .PHONY: clean
 clean:
