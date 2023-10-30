@@ -1,7 +1,7 @@
 .PHONY: testnby2multiplier
 testnby2multiplier: 
 	@bsc dadda_8.bsv
-	@bsc multiplier.bsv
+	@bsc nby2multiplier.bsv
 	@bsc -verilog testbench.bsv
 	@bsc -e mkTest mkTest.v
 	@./a.out
@@ -18,7 +18,7 @@ testUSmultiplier:
 testmul:
 	@bsc pbox_types.bsv
 	@bsc dadda_8.bsv
-	@bsc multiplier.bsv
+	@bsc nby2multiplier.bsv
 	@bsc usmultiplier.bsv
 	@bsc Zpsfoperand.bsv
 	@echo "Compiled Successfully, Running Testbench"

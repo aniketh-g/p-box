@@ -29,14 +29,14 @@ function Bit#(TAdd#(n,m)) usMult(Bit#(n) a, Bit#(m) b, Bit#(1) sgn)
     Vector#(m, Bit#(n)) snew = newVector();
     Vector#(m, Bit#(n)) carries = newVector();
     
-    `ifdef debug $display("sign_config = ", sgn); `endif
+    // `ifdef debug $display("sign_config = ", sgn); `endif
 
     for(Integer i = 0; i < valueOf(m); i = i + 1)
         for(Integer j = 0; j < valueOf(n); j = j + 1)
             if(((j == valueOf(n) - 1) || (i == valueOf(m) - 1)) && !((j == valueOf(n) - 1) && (i == valueOf(m) - 1))) s[i][j] = (a[j] & b[i])^sgn;
             else s[i][j] = a[j] & b[i];
 
-    `ifdef debug for(Integer i = 0; i < valueOf(m); i = i + 1) $display("s[%d] = %b", i, s[i]); `endif
+    // `ifdef debug for(Integer i = 0; i < valueOf(m); i = i + 1) $display("s[%d] = %b", i, s[i]); `endif
 
     carries[0] = 0;
     if(valueOf(n) == valueOf(m)) carries[0][valueOf(n)-1] = sgn;
@@ -52,15 +52,15 @@ function Bit#(TAdd#(n,m)) usMult(Bit#(n) a, Bit#(m) b, Bit#(1) sgn)
             direct_sum[v] = snew[v][0];
             carries[v+1] = gen_carry(snew[v], s[v+1], carries[v]);
             snew[v+1] = gen_sum(snew[v], s[v+1], carries[v]);
-            `ifdef debug $display("carries[%d] = %b, snew[%d] = %b", v, carries[v], v, snew[v]); `endif
+            // `ifdef debug $display("carries[%d] = %b, snew[%d] = %b", v, carries[v], v, snew[v]); `endif
         end
         else begin
             direct_sum[v] = snew[v][0];
-            `ifdef debug $display("carries[%d] = %b, snew[%d] = %b", v, carries[v], v, snew[v]); `endif
+            // `ifdef debug $display("carries[%d] = %b, snew[%d] = %b", v, carries[v], v, snew[v]); `endif
         end
 
     Bit#(n) final_sum = {sgn, snew[valueOf(m)-1][valueOf(n)-1:1]}+carries[valueOf(m)-1];
-    `ifdef debug $display("fs:%ba:%b", final_sum, direct_sum); `endif
+    // `ifdef debug $display("fs:%ba:%b", final_sum, direct_sum); `endif
 
     p = {final_sum, direct_sum};
 

@@ -7,12 +7,12 @@ import usmultiplier   :: * ;
 /*doc: function: The top function where depending on the instruction the
   required function is called, get the result and return it. */
   function PBoxOut fn_compute(PBoxIn inp);
-    Bit#(XLEN) result;
+    Bit#(XLEN) result = 0;
     Bit#(XLEN) rv1 = inp.rs1;
     Bit#(XLEN) rv2 = inp.rs2;
     Bit#(XLEN) rd  = 0;
     Bit#(1)    ov  = 0;
-    Bool valid;
+    Bool valid = False;
     Bit#(7) f7 = inp.instr[31:25];
     Bit#(3) f3 = inp.instr[14:12];
 
@@ -28,8 +28,8 @@ import usmultiplier   :: * ;
 
         Bit#(16) mul0_ip2 = rv2[15: 0];
         Bit#(16) mul1_ip2 = rv2[31:16];
-        Bit#(16) mul2_ip2 = rv1[47:32];
-        Bit#(16) mul3_ip2 = rv1[63:48];
+        Bit#(16) mul2_ip2 = rv2[47:32];
+        Bit#(16) mul3_ip2 = rv2[63:48];
 
         Bit#(1) isSMUL = 0;
 
