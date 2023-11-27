@@ -194,12 +194,18 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
   RX#(Instruction_type)   rx_instrtype   <- mkRX;
   RX#(OpMeta)             rx_opmeta   <- mkRX;
 
+  RX#(Bit#(32))         rx_inst   <- mkRX;
+
   /*doc:wire: reads operand-1 from the registerfile which was indexed in the previous cycle*/
   Wire#(FwdType) wr_rf_op1 <- mkWire();
   /*doc:wire: reads operand-2 from the registerfile which was indexed in the previous cycle*/
   Wire#(FwdType) wr_rf_op2 <- mkWire();
   /*doc:wire: reads operand-3/immediate from the registerfile which was indexed in the previous cycle*/
   Wire#(FwdType) wr_op3 <- mkWire();
+  `ifdef psimd
+  /*doc:wire: reads operand-d from the registerfile which was indexed in the previous cycle*/
+  Wire#(FwdType) wr_opd <- mkWire();
+  `endif
 
   /*doc:wire: wire to hold the current privilege mode*/
   Wire#(Bit#(2)) wr_priv <- mkWire();
@@ -259,6 +265,11 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
   Wire#(Bit#(`xlen)) wr_fwd_op3 <- mkWire();
   Wire#(ccore_types::Input_Packet) wr_float_inputs <- mkWire();
 `endif
+`ifdef psimd
+  /*doc:wire: holds value of operandd after checking the bypass signals from downstream isbs and
+  * regfile*/
+  Wire#(Bit#(`xlen)) wr_fwd_opd <- mkWire();
+`endif
   /*doc:wire: after checking the bypass signals from downstream ISBs, this wire indicates if the
   * latest value of operand1 is available or not. If not then we need stall on instructions waiting
   * for this value.*/
@@ -279,6 +290,13 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
   Probe#(Bool) wr_op3_avail_probe <- mkProbe();
 
   Wire#(Bool) wr_fbox_ready <- mkWire();
+`endif
+`ifdef psimd
+  /*doc:wire: after checking the bypass signals from downstream ISBs, this wire indicates if the
+  * latest value of operandd is available or not. If not then we need stall on instructions waiting
+  * for this value.*/
+  Wire#(Bool) wr_opd_avail <- mkWire();
+  Probe#(Bool) wr_opd_avail_probe <- mkProbe();
 `endif
   // The following registers are use to the maintain epochs from various pipeline stages:
   // writeback and execute stage.
@@ -320,6 +338,7 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
   Wire#(Bit#(1)) wr_count_exestalls <- mkDWire(0);
 `endif
   // ---------------------- End Instatiations --------------------------//
+  let inst = rx_inst.u.first;
   let meta = rx_meta.u.first;
   let mtval   = rx_mtval.u.first;
   let opmeta = rx_opmeta.u.first;
@@ -350,6 +369,7 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
     rx_mtval.u.deq;
     rx_instrtype.u.deq;
     rx_opmeta.u.deq;
+    rx_inst.u.deq;
   `ifdef rtldump
     rx_commitlog.u.deq;
   `endif
@@ -436,6 +456,23 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
     wr_op3_avail <= (rf3type==IRF || _op3_avail); wr_fwd_op3 <= _fwd_op3;
     wr_op3_avail_probe <= _op3_avail;
   `endif
+
+  `ifdef psimd
+    `ifdef no_wawstalls
+    let sb_rsdid = sboard.mv_board.v_id[{ `ifdef spfpu pack(opmeta.rdtype==FRF), `endif opmeta.rdaddr}];
+    `endif
+    BypassReq req_addrd = BypassReq{rd:opmeta.rdaddr, epochs: curr_epochs[0]
+                    ,sb_lock: sb_mask[ { `ifdef spfpu 1'b0, `endif opmeta.rdaddr}] 
+                    `ifdef no_wawstalls ,id: sb_rsdid `endif
+                    `ifdef spfpu ,rdtype: opmeta.rdtype `endif };
+    Vector#(TAdd#(`bypass_sources ,1), FwdType) bypd;
+    bypd[0] = wr_bypass[0];
+    bypd[1] = wr_bypass[1];
+    bypd[2] = wr_opd;
+    let {_opd_avail, _fwd_opd} = fn_bypass( req_addrd, bypd);
+    wr_opd_avail <= _opd_avail; wr_fwd_opd <= _fwd_opd;
+    wr_opd_avail_probe <= _opd_avail;
+  `endif
     if (lv_waw_stall)begin
       `logLevel( stage3, stall, $format("[%2d]STAGE3: WAW Stall", hartid))
       `logLevel( stage3, 0, $format("[%2d]STAGE3: ",hartid, fshow(sboard.mv_board)))
@@ -449,6 +486,11 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
       `logLevel( stage3, 0, $format("[%2d]STAGE3: Bypass Op3:%2d Op3Avail:%b Op3Val:%h",
           hartid, opmeta.rs3addr, _op3_avail, _fwd_op3))
       `logLevel( stage3, 0, $format("[%2d]STAGE3: imm:",hartid, fshow(wr_op3)))
+    `endif
+    `ifdef psimd
+      `logLevel( stage3, 0, $format("[%2d]STAGE3: Bypass Opd:%2d OpdAvail:%b OpdVal:%h",
+          hartid, opmeta.rdaddr, _opd_avail, _fwd_opd))
+      `logLevel( stage3, 0, $format("[%2d]STAGE3: imm:",hartid, fshow(wr_opd)))
     `endif
     end
   endrule:rl_perform_fwding
@@ -899,7 +941,8 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
       common_pkt.insttype = PSIMD;
       `logLevel( stage3, 0, $format("[%2d]STAGE3: PSIMD Op received",hartid))
       if (wr_op1_avail && wr_op2_avail) begin
-        wr_psimd_inputs <= PBoxIn{rs1: wr_fwd_op1, rs2: wr_fwd_op2, instr: extend(meta.funct)                                                   
+        wr_psimd_inputs <= PBoxIn{rs1: wr_fwd_op1, rs2: wr_fwd_op2, instr: inst                                                   
+                                  ,rd: wr_fwd_opd
                                   // `ifdef RV64 , wordop: meta.word32 `endif };
                                                                               };
         `logLevel( stage3, 0, $format("[%2d]STAGE3: PSIMD op offloaded",hartid))
@@ -999,6 +1042,7 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
     interface rx_mtval_from_stage2  = rx_mtval.e;
     interface rx_instrtype_from_stage2 = rx_instrtype.e;
     interface rx_opmeta_from_stage2= rx_opmeta.e;
+    interface rx_inst_from_stage2= rx_inst.e;
   `ifdef rtldump
     interface rx_commitlog = rx_commitlog.e;
   `endif
@@ -1028,6 +1072,11 @@ module mkstage3#(parameter Bit#(`xlen) hartid) (Ifc_stage3);
     method Action ma_op3 (FwdType i);
       wr_op3 <= i;
     endmethod
+    `ifdef psimd
+    method Action ma_opd (FwdType i);
+      wr_opd <= i;
+    endmethod
+    `endif
   endinterface;
   // -------------------------------------------------------------------------------------------//
 

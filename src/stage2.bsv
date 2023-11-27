@@ -173,6 +173,9 @@ module mkstage2#(parameter Bit#(`xlen) hartid) (Ifc_stage2);
   /*doc:mod FIFO interface to send the decoded information to the next stage.*/
   TX#(Stage3Meta)   tx_meta   <- mkTX;
 
+  /*doc:mod FIFO interface to send the instruction to the next stage.*/
+  TX#(Bit#(32))   tx_inst   <- mkTX;
+
   /*doc:mod FIFO interface to send the bad-address information to the next stage.*/
   TX#(Bit#(`xlen))   tx_mtval   <- mkTX;
 
@@ -244,6 +247,10 @@ module mkstage2#(parameter Bit#(`xlen) hartid) (Ifc_stage2);
     This register holds the latest value of operand2 from the RF. This will get updated
     every time a retirement to the same register occurs.*/
   Reg#(FwdType) rg_op2[2] <- mkCReg(2, unpack(0));
+  /*doc:reg:
+    This register holds the latest value of operandd from the RF. This will get updated
+    every time a retirement to the same register occurs.*/
+  `ifdef psimd Reg#(FwdType) rg_opd[2] <- mkCReg(2, unpack(0)); `endif
 
   Reg#(Op2type) rg_op2type[2] <- mkCReg(2, IntegerRF);
   /*doc:reg:
@@ -318,6 +325,9 @@ module mkstage2#(parameter Bit#(`xlen) hartid) (Ifc_stage2);
   `ifdef spfpu
     let rs3 <- registerfile.read_rs3(inst[31:27]);
   `endif
+  `ifdef psimd
+    let rsd <- registerfile.read_rd(inst[11:7]);
+  `endif
     // -------------------------------------------------------------------------------------- //
     
     // ------------------------ modify operand values before enquing to next stage -----------//
@@ -325,6 +335,9 @@ module mkstage2#(parameter Bit#(`xlen) hartid) (Ifc_stage2);
     Bit#(`elen) op2 =  (decoded.op_type.rs2type == Constant2) ? 'd2: // constant2 only is C enabled.
                       (decoded.op_type.rs2type == Constant4) ? 'd4:
                       (decoded.op_type.rs2type == Immediate) ? signExtend(imm) : rs2_from_rf;
+  `ifdef psimd
+    Bit#(`elen) opd =  rsd;
+  `endif
   `ifdef spfpu
     Bit#(`flen) op4 = (decoded.op_type.rs3type == FRF) ? rs3 : signExtend(imm);
   `else
@@ -399,11 +412,16 @@ module mkstage2#(parameter Bit#(`xlen) hartid) (Ifc_stage2);
                               ,rs3type: decoded.op_type.rs3type
                               ,rs3addr: decoded.op_addr.rs3addr
                             `endif
+                            `ifdef psimd
+                              ,rdaddr: decoded.op_addr.rd
+                              ,rdtype: decoded.op_type.rsdtype
+                            `endif
                             };
         tx_meta.u.enq(stage3meta);
         tx_mtval.u.enq(mtval);
         tx_instrtype.u.enq(instrType);
         tx_opmeta.u.enq(opmeta);
+        tx_inst.u.enq(inst);
       `ifdef rtldump
         let clogpkt = rx_commitlog.u.first;
         clogpkt.inst_type = tagged REG (CommitLogReg{wdata:?, rd: stage3meta.rd, 
@@ -435,9 +453,16 @@ module mkstage2#(parameter Bit#(`xlen) hartid) (Ifc_stage2);
                             epochs: wEpoch
                           `ifdef spfpu ,rdtype: decoded.op_type.rs3type `endif 
                           `ifdef no_wawstalls ,id : ? `endif };
+        `ifdef psimd
+        let _opd = FwdType{ valid: True, addr: decoded.op_addr.rd, data: opd, epochs: wEpoch
+                          `ifdef no_wawstalls ,id: ? `endif
+                          `ifdef spfpu ,rdtype: (decoded.op_type.rs2type==FloatingRF)?FRF:IRF `endif
+        };
+        `endif
                             
         rg_op1[0] <= _op1;
         rg_op2[0] <= _op2;
+        `ifdef psimd rg_opd[0] <= _opd; `endif
         rg_op2type[0] <= decoded.op_type.rs2type;
         rg_op3[0] <= _op3;
 
@@ -464,6 +489,7 @@ module mkstage2#(parameter Bit#(`xlen) hartid) (Ifc_stage2);
     interface tx_mtval_to_stage3  = tx_mtval.e;
     interface tx_instrtype_to_stage3 = tx_instrtype.e;
     interface tx_opmeta_to_stage3= tx_opmeta.e;
+    interface tx_inst_to_stage3= tx_inst.e;
   `ifdef rtldump
     interface tx_commitlog= tx_commitlog.e;
   `endif
@@ -516,6 +542,7 @@ module mkstage2#(parameter Bit#(`xlen) hartid) (Ifc_stage2);
       `else
         let _x = rg_op1[1];
         let _y = rg_op2[1];
+        `ifdef psimd let _z = rg_opd[1]; `endif
         if(rg_op1[1].addr == commit.addr && rg_op1[1].addr!=0) begin
           _x.data = commit.data;
           rg_op1[1] <= _x;
@@ -524,6 +551,12 @@ module mkstage2#(parameter Bit#(`xlen) hartid) (Ifc_stage2);
         if(rg_op2[1].addr == commit.addr && rg_op2[1].addr!=0 && rg_op2type[1] == IntegerRF)
           _y.data = commit.data;
           rg_op2[1] <= _y;
+        `ifdef psimd
+        if(rg_opd[1].addr == commit.addr && rg_opd[1].addr!=0) begin
+          _z.data = commit.data;
+          rg_opd[1] <= _z;
+        end
+        `endif
       `endif
     end
     endmethod
@@ -557,6 +590,7 @@ module mkstage2#(parameter Bit#(`xlen) hartid) (Ifc_stage2);
     method mv_op1 = rg_op1[0];
     method mv_op2 = rg_op2[0];
     method mv_op3 = rg_op3[0];
+    `ifdef psimd method mv_opd = rg_opd[0]; `endif
   endinterface;
   method mv_wfi_detected = rg_wfi;
 	

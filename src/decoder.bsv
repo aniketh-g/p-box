@@ -718,6 +718,10 @@ package decoder;
     RFType rdtype = fn_decode_rdtype(inst);
   `endif
 
+  `ifdef psimd
+    RFType rsdtype = IRF;
+  `endif
+
     Bit#(32) immediate_value = fn_decode_immediate(inst, csrs);
     Access_type mem_access = fn_decode_mem_access(inst);
     Bit#(`causesize) trapcause = fn_decode_trapcause(inst, csrs `ifdef debug ,debug `endif );
@@ -751,7 +755,7 @@ package decoder;
                 `ifdef supervisor || mem_access==SFence `endif 
 								`ifdef hypervisor || mem_access == HFence_VVMA || mem_access == HFence_GVMA `endif ;
     let op_addr = OpAddr{rs1addr:rs1, rs2addr:rs2, rd:rd `ifdef spfpu ,rs3addr: rs3 `endif };
-    let op_type = OpType{rs1type: rs1type, rs2type:rs2type `ifdef spfpu ,rs3type: rs3type, rdtype: rdtype `endif };
+    let op_type = OpType{rs1type: rs1type, rs2type:rs2type `ifdef spfpu ,rs3type: rs3type, rdtype: rdtype `endif `ifdef psimd ,rsdtype: rsdtype `endif };
     let instr_meta = InstrMeta{inst_type: inst_type,
                               memaccess: mem_access,
                               funct_cause:temp1,
@@ -805,8 +809,10 @@ package decoder;
       Instruction_type x_inst_type = result_decode.meta.inst_type;
       Op1type x_rs1type = result_decode.op_type.rs1type;
       Op2type x_rs2type = result_decode.op_type.rs2type;
+      RFType  x_rsdtype  = result_decode.op_type.rsdtype;
       Bit#(5) x_rs1addr = result_decode.op_addr.rs1addr;
       Bit#(5) x_rs2addr = result_decode.op_addr.rs2addr;
+      Bit#(5) x_rdaddr  = result_decode.op_addr.rd;
 
       if(is_microtrap_set)begin
         x_inst_type=TRAP;

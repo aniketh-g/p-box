@@ -24,6 +24,7 @@ typedef struct {
   Bit#(32) instr;   // 32-bit Instruction
   Bit#(XLEN) rs1;   // Data of register addressed by rs1
   Bit#(XLEN) rs2;   // Data of register addressed by rs2
+  Bit#(XLEN) rd;   // Data of register addressed by rd
 } PBoxIn deriving (Bits, Eq, FShow);
 
 typedef struct {

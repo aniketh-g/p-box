@@ -84,7 +84,7 @@ module mkstage4#(parameter Bit#(`xlen) hartid)(Ifc_stage4);
   RX#(XBoxOutput) rx_fbox <- mkRX;
   `endif
   `ifdef psimd
-  RX#(PBoxOutput) rx_pbox <- mkRX;
+  RX#(PBoxOut) rx_pbox <- mkRX;
   `endif
 
   

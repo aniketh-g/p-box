@@ -19,6 +19,7 @@ package riscv;
 `endif
 `ifdef psimd
   import pbox         :: * ;
+  import pbox_types   :: * ;
 `endif
 `ifdef spfpu 
   import fpu         :: * ;
@@ -199,7 +200,7 @@ module mkriscv#(Bit#(`vaddr) resetpc, parameter Bit#(`xlen) hartid)(Ifc_riscv);
   `endif
   `ifdef psimd
     Ifc_pbox pbox <- mkpbox(0);
-    FIFOF#(PBoxOutput) ff_pbox_out <- mkSizedBypassFIFOF(`isb_s3s4 );
+    FIFOF#(PBoxOut) ff_pbox_out <- mkSizedBypassFIFOF(`isb_s3s4 );
   `endif
   `ifdef debug
     /*doc:wire: */

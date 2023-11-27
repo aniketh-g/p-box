@@ -94,6 +94,10 @@ typedef enum {`ifdef spfpu FloatingRF = 4, `endif
                            IntegerRF = 0, Immediate = 1, Constant4 = 2, Constant2 = 3}
                            Op2type deriving(Bits, Eq, FShow);
 
+/*doc:enum: This enum indicates the type of the operand-rd used for execution 
+ * min size: 0 max size: 1 */
+`ifdef psimd typedef enum{IntegerRF = 0} OpRDtype deriving(Bits, Eq, FShow); `endif
+
 /*doc:enum: This enum indicates in which rf the destination register needs to be updated
  * min size: 1 max size: 1 */
 typedef enum {FRF = 1, IRF = 0} RFType deriving(Bits, Eq, FShow);
@@ -136,6 +140,9 @@ typedef struct{
 `endif
 `ifdef spfpu 
   RFType rdtype;  // bits [5]
+`endif
+`ifdef psimd 
+  RFType rsdtype;  // bits [5]
 `endif
   Bit#(5) rd;     // bits [4:0]
 }SBDUpd deriving (Bits,  Eq);
@@ -205,6 +212,9 @@ typedef struct{
 `ifdef spfpu
   RFType rdtype;      // bits [ELEN+8]
 `endif
+`ifdef psimd
+  RFType rsdtype;      // bits [ELEN+8]
+`endif
   Bit#(5) rd;         // bits [ELEN+7 : ELEN+3]
   Bit#(1) sb_lock;    // bits [1]
   Bit#(1) epochs;     // bits [0]
@@ -217,6 +227,9 @@ typedef struct{
 `endif
 `ifdef spfpu
   RFType rdtype;      // bits [ELEN+7]
+`endif
+`ifdef psimd
+  RFType rsdtype;      // bits [ELEN+7]
 `endif
   Bool valid;         // bits [ELEN+6]
   Bit#(5) addr;       // bits [ELEN+5: ELEN+1]
@@ -262,6 +275,9 @@ typedef struct{
 `ifdef spfpu
   RFType  rs3type;
   RFType  rdtype;
+`endif
+`ifdef psimd
+  RFType rsdtype;
 `endif
   Op1type rs1type;
   Op2type rs2type; 
@@ -433,6 +449,10 @@ typedef struct {
   RFType  rs3type;
   Bit#(5) rs3addr;
 `endif
+`ifdef psimd
+  RFType  rdtype;
+  Bit#(5) rdaddr;
+`endif
   Op1type rs1type;
   Op2type rs2type;
   Bit#(5) rs1addr;
@@ -459,6 +479,12 @@ typedef struct{
   RFType      optype;
 `endif
 } RFOp3 deriving(Bits, Eq, FShow);
+
+typedef struct{
+  Bit#(5)     addr;
+  Bit#(`elen)  data;
+  RFType     optype;
+} RFOpd deriving(Bits, Eq, FShow);
 // ------------------------------------------------------------------------------------------
 
 
@@ -606,6 +632,9 @@ typedef struct{
 `ifdef spfpu
   RFType        rdtype;
 `endif
+`ifdef psimd
+  RFType        rsdtype;
+`endif
   Bit#(`vaddr) pc;
   Bit#(5)      rd;
   Bit#(1)      epochs;
@@ -618,6 +647,9 @@ instance FShow#(FUid);
     Fmt result = $format("pc:%h rd:%2d inst:",value.pc, value.rd,fshow(value.insttype));
   `ifdef spfpu
     result = result + $format(" rdtype: ",fshow(value.rdtype));
+  `endif
+  `ifdef psimd
+    result = result + $format(" rsdtype: ",fshow(value.rsdtype));
   `endif
   `ifdef no_wawstalls
     result = result + $format(" id:%2s",value.id);
@@ -633,6 +665,9 @@ typedef struct{
 `ifdef spfpu
   RFType        rdtype;
 `endif
+`ifdef psimd
+  RFType        rsdtype;
+`endif
   Bit#(`vaddr) pc;
   Bit#(5)      rd;
   Bit#(1)      epochs;
@@ -646,6 +681,9 @@ instance FShow#(CUid);
   `ifdef spfpu
     result = result + $format(" rdtype: ",fshow(value.rdtype));
   `endif
+  `ifdef psimd
+    result = result + $format(" rsdtype: ",fshow(value.rsdtype));
+  `endif
   `ifdef no_wawstalls
     result = result + $format(" id:%2s",value.id);
   `endif
@@ -656,7 +694,8 @@ endinstance
 function CUid fn_fu2cu(FUid f);
   let c =  CUid{pc: f.pc, rd: f.rd, epochs: f.epochs, insttype : ?
           `ifdef no_wawstalls ,id: f.id `endif 
-          `ifdef spfpu ,rdtype: f.rdtype `endif };
+          `ifdef spfpu ,rdtype: f.rdtype `endif
+          `ifdef psimd ,rsdtype: f.rsdtype `endif };
   c.insttype = case (f.insttype) matches
     BASE: BASE;
     SYSTEM: SYSTEM;
@@ -686,6 +725,9 @@ typedef struct{
 `ifdef spfpu
   RFType      rdtype ;
 `endif
+`ifdef psimd
+  RFType      rsdtype;
+`endif
   Bool        unlock_only;
   Bit#(5)     addr;
   Bit#(`elen)  data;
@@ -697,6 +739,10 @@ instance FShow#(CommitData);
     Fmt optype = $format("X");
   `ifdef spfpu
     if (val.rdtype == FRF)
+      optype = $format("F");
+  `endif
+  `ifdef psimd
+    if (val.rsdtype == FRF)
       optype = $format("F");
   `endif
     result = result + optype + $format("[%d] = %h unlock:%b",val.addr,val.data,val.unlock_only);

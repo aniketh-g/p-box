@@ -117,6 +117,8 @@ interface Ifc_s3_rx;
   interface RXe#(Instruction_type)    rx_instrtype_from_stage2;
   /*doc: subifc: interface to receive the operand metadata value from stage2*/
   interface RXe#(OpMeta)              rx_opmeta_from_stage2;
+  /*doc: subifc: interface to receive the instruction value from stage2*/
+  interface RXe#(Bit#(32))              rx_inst_from_stage2;
 `ifdef rtldump 
   // interface to receive the instruction sequence for the rtl dump feature
   interface RXe#(CommitLogPacket)     rx_commitlog;
@@ -150,6 +152,11 @@ interface Ifc_s3_rf;
   /*doc:method: receive op2 and its meta info from previous stage (stage2/decode)*/
   (*always_enabled, always_ready*)
   method Action ma_op3 (FwdType i);
+  `ifdef psimd
+  /*doc:method: receive opd and its meta info from previous stage (stage2/decode)*/
+  (*always_enabled, always_ready*)
+  method Action ma_opd (FwdType i);
+  `endif
 endinterface: Ifc_s3_rf
 
 interface Ifc_s3_cache;
@@ -204,7 +211,7 @@ endinterface: Ifc_s3_psimd
 
 `ifdef psimd
   interface Ifc_s4_psimd;
-    interface RXe#(PBoxOutput) rx_pbox_output;
+    interface RXe#(PBoxOut) rx_pbox_output;
   endinterface:Ifc_s4_psimd
 `endif
 
@@ -305,6 +312,7 @@ interface Ifc_s2_tx;
 
   interface TXe#(OpMeta) tx_opmeta_to_stage3;
 
+  interface TXe#(Bit#(32)) tx_inst_to_stage3;
 `ifdef rtldump
   /*doc:subifc: send instruction trace to next stage */
   interface TXe#(CommitLogPacket) tx_commitlog;
@@ -324,6 +332,11 @@ interface Ifc_s2_rf;
   /*doc:method: Latest value of operand3 from rf*/
   method FwdType mv_op3;
 
+  `ifdef psimd
+  (*always_ready*)
+  /*doc:method: Latest value of operandd from rf*/
+  method FwdType mv_opd;
+  `endif
 endinterface:Ifc_s2_rf
 
 interface Ifc_s2_common;
@@ -522,6 +535,7 @@ endinterface:Ifc_s5_perfmonitors
     FIFOF#(Bit#(`xlen)) ff_mtval <- mkLFIFOF();
     FIFOF#(Instruction_type) ff_insttype <- mkLFIFOF();
     FIFOF#(OpMeta) ff_opmeta <- mkLFIFOF();
+    FIFOF#(Bit#(32)) ff_inst <- mkLFIFOF();
   `ifdef rtldump
     FIFOF#(CommitLogPacket) ff_commitlog <- mkLFIFOF();
   `endif
@@ -535,6 +549,9 @@ endinterface:Ifc_s5_perfmonitors
     let _x6 <- mkConnection(ff_insttype, s3.rx_instrtype_from_stage2);
     let _x7 <- mkConnection(s2.tx_opmeta_to_stage3, ff_opmeta);
     let _x8 <- mkConnection(ff_opmeta, s3.rx_opmeta_from_stage2);
+
+    let _x9  <- mkConnection(s2.tx_inst_to_stage3, ff_inst);
+    let _x10 <- mkConnection(ff_inst, s3.rx_inst_from_stage2);
   `ifdef rtldump
     mkConnection(s2.tx_commitlog, ff_commitlog);
     mkConnection(ff_commitlog, s3.rx_commitlog);
@@ -547,6 +564,7 @@ endinterface:Ifc_s5_perfmonitors
       mkConnection (s2.mv_op1, s3.ma_op1);
       mkConnection (s2.mv_op2, s3.ma_op2);
       mkConnection (s2.mv_op3, s3.ma_op3);
+      `ifdef psimd mkConnection (s2.mv_opd, s3.ma_opd); `endif
     endmodule
   endinstance
 

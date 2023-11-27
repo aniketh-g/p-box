@@ -28,6 +28,9 @@ package registerfile;
   `ifdef spfpu
     method ActionValue#(Bit#(`flen)) read_rs3(Bit#(5) addr);
   `endif
+  `ifdef psimd
+    method ActionValue#(Bit#(`elen)) read_rd(Bit#(5) addr);
+  `endif
 		method Action commit_rd (CommitData c);
 	endinterface
 `ifdef registerfile_noinline
@@ -113,6 +116,18 @@ package registerfile;
       `endif
     endmethod
   `endif
+    // This method will read operandd using rd from the decode stage. If there a commit in the
+    // same cycle to rs1addr, then that value if bypassed else the value is read from the
+    // corresponding register file.
+    // Explicit Conditions : fire only when initialize is False;
+    // Implicit Conditions : None
+    method ActionValue#(Bit#(`elen)) read_rd(Bit#(5) addr) if(!initialize);
+    `ifdef merged_rf
+      return zeroExtend(rf.sub({1'b0,addr}));
+    `else
+      return zeroExtend(xrf.sub(addr)); // zero extend is required when `xlen<`elen*/
+    `endif
+    endmethod
 
     // This method is fired when the write - back stage performs a commit and needs to update the RF.
     // The value being commited is updated in the respective register file and also bypassed to the
