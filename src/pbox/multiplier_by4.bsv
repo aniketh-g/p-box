@@ -20,8 +20,8 @@ function Bit#(x) gen_sum(Bit#(x) snew_prev, Bit#(x) s, Bit#(x) cin);
 endfunction
 
 
-function Bit#(TAdd#(n,n)) usMult(Bit#(n) a, Bit#(n) b, Bit#(1) sgn, Bit#(1) sgn_by_4)
-    provisos(Add#(1, a__, n), Add#(b__, 1, TAdd#(n, n)));
+function Bit#(TAdd#(n,n)) usMult(Bit#(n) a, Bit#(n) b, Bit#(1) sgn, Bit#(TMul#(n,2)) sgn_by_4)
+    provisos(Add#(1, a__, n), Add#(b__, 1, TAdd#(n, n)),Add#(c__, 2, TAdd#(n, n)),Add#(d__, 3, TAdd#(n, n)),Add#(e__, 16, TAdd#(n, n)),Add#(f__, TMul#(n, 2), TAdd#(n, n)));
     
     Bit#(TAdd#(n, n)) p;
 
@@ -34,16 +34,25 @@ function Bit#(TAdd#(n,n)) usMult(Bit#(n) a, Bit#(n) b, Bit#(1) sgn, Bit#(1) sgn_
     for(Integer i = 0; i < valueOf(n); i = i + 1)
         for(Integer j = 0; j < valueOf(n); j = j + 1) begin
             if(((j == valueOf(n) - 1) || (i == valueOf(n) - 1)) && !((j == valueOf(n) - 1) && (i == valueOf(n) - 1))) s[i][j] = (a[j] & b[i])^sgn;
-            else if(((j == valueOf(TDiv#(TMul#(n,3),4)) - 1) || (i == valueOf(TDiv#(TMul#(n,3),4)) - 1)) && !((j == valueOf(TDiv#(TMul#(n,3),4)) - 1) && (i == valueOf(TDiv#(TMul#(n,3),4)) - 1))) s[i][j] = (a[j] & b[i])^sgn_by_4;
-            else if(((j == valueOf(TDiv#(n,4)) - 1) || (i == valueOf(TDiv#(n,4)) - 1)) && !((j == valueOf(TDiv#(n,4)) - 1) && (i == valueOf(TDiv#(n,4)) - 1))) s[i][j] = (a[j] & b[i])^sgn_by_4;
+            else if(((j == valueOf(TDiv#(TMul#(n,3),4)) - 1) || (i == valueOf(TDiv#(TMul#(n,3),4)) - 1)) && //border adders
+                   !((j == valueOf(TDiv#(TMul#(n,3),4)) - 1) && (i == valueOf(TDiv#(TMul#(n,3),4)) - 1) &&  //intersection
+                     (i >= valueOf(TDiv#(n,2)) && (j >= valueOf(TDiv#(n,2)))))) //avoiding cross product
+                    s[i][j] = (a[j] & b[i])^(sgn_by_4[0]);
+            else if(((j == valueOf(TDiv#(n,4)) - 1) || (i == valueOf(TDiv#(n,4)) - 1)) && //border adders
+                   !((j == valueOf(TDiv#(n,4)) - 1) && (i == valueOf(TDiv#(n,4)) - 1) &&  //intersection
+                     (i < valueOf(TDiv#(n,4)) && (j < valueOf(TDiv#(n,4)))))) //avoiding cross product
+                    s[i][j] = (a[j] & b[i])^(sgn_by_4[0]);
+            else if(((i <  valueOf(TDiv#(n,4)) && j >= valueOf(TDiv#(n,4))) ||
+                     (i >= valueOf(TDiv#(n,4)) && j <  valueOf(TDiv#(n,4)))))
+                    s[i][j] = (a[j] & b[i]) & (~sgn_by_4[0]);
             else s[i][j] = a[j] & b[i];
         end
     // `ifdef debug for(Integer i = 0; i < valueOf(n); i = i + 1) $display("s[%d] = %b", i, s[i]); `endif
 
     carries[0] = 0;
     carries[0][valueOf(n)-1] = sgn;
-    carries[0][valueOf(TDiv#(TMul#(n,3),4))-1] = sgn_by_4;
-    carries[0][valueOf(TDiv#(n,4))-1] = sgn_by_4;
+    //carries[0][valueOf(TDiv#(TMul#(n,3),4))-1] = sgn_by_4[0];
+    //carries[0][valueOf(TDiv#(n,4))-1] = sgn_by_4[0];
 
     snew[0] = s[0];
     Bit#(TSub#(n,0)) direct_sum = 0;
@@ -63,9 +72,9 @@ function Bit#(TAdd#(n,n)) usMult(Bit#(n) a, Bit#(n) b, Bit#(1) sgn, Bit#(1) sgn_
     // `ifdef debug $display("fs:%ba:%b", final_sum, direct_sum); `endif
 
     p = {final_sum, direct_sum};
-    p = p + {0,sgn_by_4<<(valueOf(TDiv#(TMul#(n,3),2))-1)} + {0,sgn_by_4<<(valueOf(TDiv#(n,2))-1)};
+    p = p + {0,sgn_by_4<<(valueOf(TDiv#(TMul#(n,3),2))-1)} + {0,sgn_by_4<<(valueOf(TDiv#(n,2))-1)} + {0,sgn_by_4<<(valueOf(TDiv#(TMul#(n,5),4)))} + {0,sgn_by_4<<(valueOf(TDiv#(n,4)))};
 
-    return {0,(sgn_by_4<<1)};
+    return p;
 endfunction
 
 endpackage : multiplier_by4
