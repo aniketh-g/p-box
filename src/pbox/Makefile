@@ -14,6 +14,14 @@ testUSmultiplier:
 	@bsc -e mkTest mkTest.v
 	@./a.out +RTS -K40000M +RTS
 
+.PHONY: testMultiplier_by4
+testMultiplier_by4: 
+	@bsc multiplier_by4.bsv
+	@bsc multiplier_by4_module.bsv
+	@bsc -verilog multiplier_b4_TB.bsv +RTS -K40000M +RTS
+	@bsc -e mkTest mkTest.v +RTS -K40000M +RTS
+	@./a.out
+
 .PHONY: testmul
 testmul:
 	@bsc pbox_types.bsv
