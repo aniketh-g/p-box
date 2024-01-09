@@ -7,7 +7,8 @@ from random import randrange
 N = 5
 
 computeTB = open("../computeTB.bsv", "w")
-computeTB.write("`include \"compute.bsv\"\n\
+computeTB.write("""\
+`include "compute.bsv"\n\
 import pbox_types     :: * ;\n\
 \n\
 (*synthesize*)\n\
@@ -17,12 +18,13 @@ module mkTest(Empty);\n\
     rule count;\n\
         counter <= counter + 1;\n\
         if(counter >= {N}) begin\n\
-            $display(\"[TB] Timeout\");\n\
+            $display("[TB] Timeout");\n\
             $finish;\n\
         end\n\
     endrule\n\
 \
-    rule compute;".format(N=N+10))
+    rule compute;"""\
+.format(N=N+10))
 computeTB.close()
 
 pyout = open("./outputs/pyout.txt", "w")
