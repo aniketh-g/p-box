@@ -126,7 +126,7 @@ def khm8(a, b, i):
     if(debug): print(res)
     return res
 
-def khm8(a, b, i):
+def khmx8(a, b, i):
     funct7 = "1001111"
     funct3 = "000"
     f = open("../computeTB.bsv", "a")
