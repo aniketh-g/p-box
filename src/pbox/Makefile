@@ -34,13 +34,25 @@ testmul:
 	@bsc -e mkTest mkTest.v +RTS -K40000M -RTS
 	@./a.out
 
+TESTOUT= /home/aniketh/Shakti/p-box/src/pbox/testing/outputs/
+
 .PHONY: testcompute
 testcompute:
+	@echo "Generating testbench..."
+	@cd testing; python3 gen_test.py
+	@echo "\033[0;32mTestbench generated: computeTB.bsv\033[0m"
+	@echo "Running tests..."
 	@bsc pbox_types.bsv
 	@bsc usmultiplier.bsv
 	@bsc compute.bsv
+	@bsc -verilog computeTB.bsv +RTS -K40000M -RTS
+	@bsc -e mkTest mkTest.v +RTS -K40000M -RTS
+	@./a.out > $(TESTOUT)/tbout.txt
+	@echo "\033[0;32mGenerated testbench outputs\033[0m"
+	@cmp --silent $(TESTOUT)/tbout.txt $(PYOUT)/pyout.txt && echo "\033[0;32m--- ALL TESTS PASSED !!! ---" || echo "\033[0;31m--- TEST FAILED ---"
 
 .PHONY: clean
 clean:
 	@rm -r *.bo *.v *.out
+	@cd $(TESTOUT); rm -r *.txt
 	@echo "Cleaned"

@@ -27,6 +27,7 @@ def mul8(a, b, isSigned, isSaturate):
             ov = 1
         else:
             ov = 0
+        return [format((result >> 7) & 0xFF, "08b"), ov]
 
     # Handle overflow by taking the least significant 8 bits
     return [format(result & 0xFFFF, "016b"), ov]
@@ -114,14 +115,14 @@ def khm8(a, b, i):
     a8s = list((a >> j) & 0xFF for j in range(0,64,8))
     b8s = list((b >> j) & 0xFF for j in range(0,64,8))
     if(debug): print(a8s, b8s)
-    res = (mul8(a8s[7], b8s[7], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[6], b8s[6], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[5], b8s[5], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[4], b8s[4], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[3], b8s[3], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[2], b8s[2], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[1], b8s[1], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[0], b8s[0], True, True)[0]>>7 & 0xF)
+    res = mul8(a8s[7], b8s[7], True, True)[0] + sep +\
+          mul8(a8s[6], b8s[6], True, True)[0] + sep +\
+          mul8(a8s[5], b8s[5], True, True)[0] + sep +\
+          mul8(a8s[4], b8s[4], True, True)[0] + sep +\
+          mul8(a8s[3], b8s[3], True, True)[0] + sep +\
+          mul8(a8s[2], b8s[2], True, True)[0] + sep +\
+          mul8(a8s[1], b8s[1], True, True)[0] + sep +\
+          mul8(a8s[0], b8s[0], True, True)[0]
     if(debug): print(res)
     return res
 
@@ -136,13 +137,13 @@ def khm8(a, b, i):
     a8s = list((a >> j) & 0xFF for j in range(0,64,8))
     b8s = list((b >> j) & 0xFF for j in range(0,64,8))
     if(debug): print(a8s, b8s)
-    res = (mul8(a8s[7], b8s[6], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[6], b8s[7], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[5], b8s[4], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[4], b8s[5], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[3], b8s[2], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[2], b8s[3], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[1], b8s[0], True, True)[0]>>7 & 0xF) + sep +\
-          (mul8(a8s[0], b8s[1], True, True)[0]>>7 & 0xF)
+    res = mul8(a8s[7], b8s[6], True, True)[0] + sep +\
+          mul8(a8s[6], b8s[7], True, True)[0] + sep +\
+          mul8(a8s[5], b8s[4], True, True)[0] + sep +\
+          mul8(a8s[4], b8s[5], True, True)[0] + sep +\
+          mul8(a8s[3], b8s[2], True, True)[0] + sep +\
+          mul8(a8s[2], b8s[3], True, True)[0] + sep +\
+          mul8(a8s[1], b8s[0], True, True)[0] + sep +\
+          mul8(a8s[0], b8s[1], True, True)[0]
     if(debug): print(res)
     return res

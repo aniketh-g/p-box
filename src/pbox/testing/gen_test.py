@@ -30,7 +30,7 @@ computeTB.close()
 pyout = open("./outputs/pyout.txt", "w")
 
 for i in range(N):
-    pyout.write("[TB {j}] {ans}\n".format(ans=smul8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
+    pyout.write("[TB {j}] {ans}\n".format(ans=khm8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
 
 
 pyout.close()
