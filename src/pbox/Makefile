@@ -34,7 +34,7 @@ testmul:
 	@bsc -e mkTest mkTest.v +RTS -K40000M -RTS
 	@./a.out
 
-TESTOUT= /home/aniketh/Shakti/p-box/src/pbox/testing/outputs/
+TESTOUT= ./testing/outputs/
 
 .PHONY: testcompute
 testcompute:
