@@ -209,3 +209,11 @@ clean:
 clean_verif:
 	rm -rf verification/workdir/*
 	rm -rf verification/riscv-torture/output/riscv-torture
+
+.PHONY: test_psimd
+test_psimd:
+	@make generate_verilog
+	@make link_verilator
+	@make generate_boot_files
+	@cd ./bin; ./out +rtldump
+	@cat ./bin/rtl.dump
