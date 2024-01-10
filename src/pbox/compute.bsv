@@ -40,7 +40,6 @@ import multiplier_by4   :: * ;
     endcase
     Bit#(1) is16BitMul = is16bitMulAcc|isMul16;
     Bit#(1) is32BitMul = is32BitMulAcc|isMul32A64|isMSW32Mul;
-    Bit#(1) isMul = is16BitMul|is32BitMul;
     //End of setting bool values
     
     // Start of assigning multiplicands to appropriate registers
@@ -65,7 +64,7 @@ import multiplier_by4   :: * ;
         Bit#(8) byt6_ip2 = rv2[55:48];
         Bit#(8) byt7_ip2 = rv2[63:56];
         
-        Bit#(16) isSign = zeroExtend(~(f7[4] & f7[3]));
+        Bit#(64) isSign = zeroExtend(~(f7[4] & f7[3]));
         Bit#(1) isCross = f7[0];
         Bit#(1) isSat = f7[1];
 
@@ -83,7 +82,7 @@ import multiplier_by4   :: * ;
         let prod0 = (usMult({8'b0, byt1_ip1, 8'b0, byt0_ip1}, {8'b0, byt1_ip2, 8'b0, byt0_ip2}, 0, isSign))[15:0];
         let prod1 = (usMult({8'b0, byt1_ip1, 8'b0, byt0_ip1}, {8'b0, byt1_ip2, 8'b0, byt0_ip2}, 0, isSign))[47:32];
         let prod2 = (usMult({8'b0, byt3_ip1, 8'b0, byt2_ip1}, {8'b0, byt3_ip2, 8'b0, byt2_ip2}, 0, isSign))[15:0];
-        let prod2 = (usMult({8'b0, byt3_ip1, 8'b0, byt2_ip1}, {8'b0, byt3_ip2, 8'b0, byt2_ip2}, 0, isSign))[47:32];
+        let prod3 = (usMult({8'b0, byt3_ip1, 8'b0, byt2_ip1}, {8'b0, byt3_ip2, 8'b0, byt2_ip2}, 0, isSign))[47:32];
 
         result = {prod3, prod2, prod1, prod0};
         valid = True;
@@ -127,33 +126,33 @@ import multiplier_by4   :: * ;
             
             // `ifdef debug $display("isSingle %b, isInvStraight %b, isX %b", isSingle, isInvStraight, isX); `endif
 
-                // If isX, cross only second input
-                if((isX | isInvStraight) == 1) begin
-                    mul0_ip2 = rv2[31:16];
-                    mul1_ip2 = rv2[15:0];
-                    mul2_ip2 = rv2[63:48];
-                    mul3_ip2 = rv2[47:32];
-                end
-                // If isInvStraight, cross first input as well
-                if(isInvStraight == 1) begin
-                    mul0_ip1 = rv1[31:16];
-                    mul1_ip1 = rv1[15:0];
-                    mul2_ip1 = rv1[63:48];
-                    mul3_ip1 = rv1[47:32];
-                end
-                Bit#(1) isSMAL = (f7[1] & f7[0]);
-                if((isMul16A64 & isSMAL) == 1) begin
-                    mul0_ip1 = rv2[63:48];
-                    mul0_ip2 = rv2[47:32];
-                    mul1_ip1 = rv2[31:16];
-                    mul1_ip2 = rv2[15:0];
-                end
+            // If isX, cross only second input
+            if((isX | isInvStraight) == 1) begin
+                mul0_ip2 = rv2[31:16];
+                mul1_ip2 = rv2[15:0];
+                mul2_ip2 = rv2[63:48];
+                mul3_ip2 = rv2[47:32];
             end
-            // Compute Products
-            let mul0 = usMult(mul0_ip1, mul0_ip2, isSMUL, 0);
-            let mul1 = usMult(mul1_ip1, mul1_ip2, isSMUL, 0);
-            let mul2 = usMult(mul2_ip1, mul2_ip2, isSMUL, 0);
-            let mul3 = usMult(mul3_ip1, mul3_ip2, isSMUL, 0);
+            // If isInvStraight, cross first input as well
+            if(isInvStraight == 1) begin
+                mul0_ip1 = rv1[31:16];
+                mul1_ip1 = rv1[15:0];
+                mul2_ip1 = rv1[63:48];
+                mul3_ip1 = rv1[47:32];
+            end
+            Bit#(1) isSMAL = (f7[1] & f7[0]);
+            if((isMul16A64 & isSMAL) == 1) begin
+                mul0_ip1 = rv2[63:48];
+                mul0_ip2 = rv2[47:32];
+                mul1_ip1 = rv2[31:16];
+                mul1_ip2 = rv2[15:0];
+            end
+        end
+        // Compute Products
+        let mul0 = usMult(mul0_ip1, mul0_ip2, isSMUL, 0);
+        let mul1 = usMult(mul1_ip1, mul1_ip2, isSMUL, 0);
+        let mul2 = usMult(mul2_ip1, mul2_ip2, isSMUL, 0);
+        let mul3 = usMult(mul3_ip1, mul3_ip2, isSMUL, 0);
 
         // `ifdef debug $display("w0 = %b = %d = -%d\nw1 = %b = %d = -%d", mul0, mul0, ~mul0+1, mul1, mul1, ~mul1+1); `endif
         // `ifdef debug $display("w2 = %b = %d = -%d\nw3 = %b = %d = -%d", mul2, mul2, ~mul2+1, mul3, mul3, ~mul3+1); `endif
@@ -210,28 +209,28 @@ import multiplier_by4   :: * ;
             Bit#(1) ism1_neg = (f7[4]) | (f7[3] & ~f7[1]);
             Bit#(1) ism0_neg = (f7[4] & ~f7[0]);
 
-                if(~isAcc64 == 1) begin
-                    result = rd+signExtend(mul0)+signExtend(mul1);
-                    valid  = True;
+            if(~isAcc64 == 1) begin
+                result = rd+signExtend(mul0)+signExtend(mul1);
+                valid  = True;
+            end
+            else if(isAcc64 == 1) begin
+                if(ism1_neg == 1) begin
+                    mul1 = ~mul1+1;
+                    mul3 = ~mul3+1;
                 end
-                else if(isAcc64 == 1) begin
-                    if(ism1_neg == 1) begin
-                        mul1 = ~mul1+1;
-                        mul3 = ~mul3+1;
-                    end
-                    if(ism0_neg == 1) begin
-                        mul0 = ~mul0+1;
-                        mul0 = ~mul0+1;
-                    end
-                    result = rd+signExtend(mul0)+signExtend(mul1)+signExtend(mul2)+signExtend(mul3);
-                    valid  = True;
+                if(ism0_neg == 1) begin
+                    mul0 = ~mul0+1;
+                    mul0 = ~mul0+1;
                 end
+                result = rd+signExtend(mul0)+signExtend(mul1)+signExtend(mul2)+signExtend(mul3);
+                valid  = True;
             end
         end
-    
+    end
+
     else if (is32BitMul == 1) begin
-            Bit#(32) t0_ip1 = rv1[31: 0];
-            Bit#(32) t1_ip1 = rv1[63:32];
+        Bit#(32) t0_ip1 = rv1[31: 0];
+        Bit#(32) t1_ip1 = rv1[63:32];
 
         Bit#(32) t0_ip2 = rv2[31: 0];
         Bit#(32) t1_ip2 = rv2[63:32];
