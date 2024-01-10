@@ -34,17 +34,24 @@ function Bit#(TAdd#(n,n)) usMult(Bit#(n) a, Bit#(n) b, Bit#(1) sgn, Bit#(TMul#(n
     for(Integer i = 0; i < valueOf(n); i = i + 1)
         for(Integer j = 0; j < valueOf(n); j = j + 1) begin
             if(((j == valueOf(n) - 1) || (i == valueOf(n) - 1)) && !((j == valueOf(n) - 1) && (i == valueOf(n) - 1))) s[i][j] = (a[j] & b[i])^sgn;
+
             else if(((j == valueOf(TDiv#(TMul#(n,3),4)) - 1) || (i == valueOf(TDiv#(TMul#(n,3),4)) - 1)) && //border adders
-                   !((j == valueOf(TDiv#(TMul#(n,3),4)) - 1) && (i == valueOf(TDiv#(TMul#(n,3),4)) - 1) &&  //intersection
-                     (i >= valueOf(TDiv#(n,2)) && (j >= valueOf(TDiv#(n,2)))))) //avoiding cross product
+                   !((j == valueOf(TDiv#(TMul#(n,3),4)) - 1) && (i == valueOf(TDiv#(TMul#(n,3),4)) - 1)) &&  //intersection
+                     (i >= valueOf(TDiv#(n,2)) && (j >= valueOf(TDiv#(n,2))))) //avoiding cross product
+
                     s[i][j] = (a[j] & b[i])^(sgn_by_4[0]);
+
             else if(((j == valueOf(TDiv#(n,4)) - 1) || (i == valueOf(TDiv#(n,4)) - 1)) && //border adders
-                   !((j == valueOf(TDiv#(n,4)) - 1) && (i == valueOf(TDiv#(n,4)) - 1) &&  //intersection
-                     (i < valueOf(TDiv#(n,4)) && (j < valueOf(TDiv#(n,4)))))) //avoiding cross product
+                   !((j == valueOf(TDiv#(n,4)) - 1) && (i == valueOf(TDiv#(n,4)) - 1)) &&  //intersection
+                     (i < valueOf(TDiv#(n,4)) && (j < valueOf(TDiv#(n,4))))) //avoiding cross product
+
                     s[i][j] = (a[j] & b[i])^(sgn_by_4[0]);
+
             else if(((i <  valueOf(TDiv#(n,4)) && j >= valueOf(TDiv#(n,4))) ||
                      (i >= valueOf(TDiv#(n,4)) && j <  valueOf(TDiv#(n,4)))))
+
                     s[i][j] = (a[j] & b[i]) & (~sgn_by_4[0]);
+
             else s[i][j] = a[j] & b[i];
         end
     // `ifdef debug for(Integer i = 0; i < valueOf(n); i = i + 1) $display("s[%d] = %b", i, s[i]); `endif
