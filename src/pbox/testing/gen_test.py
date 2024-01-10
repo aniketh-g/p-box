@@ -4,7 +4,7 @@ from psimd_test_fns import *
 import random
 from random import randrange
 
-N = 5
+N = 50
 
 computeTB = open("../computeTB.bsv", "w")
 computeTB.write("""\
@@ -24,18 +24,25 @@ module mkTest(Empty);\n\
     endrule\n\
 \
     rule compute;"""\
-.format(N=N+10))
+.format(N=N*4+10))
 computeTB.close()
 
 pyout = open("./outputs/pyout.txt", "w")
 
-for i in range(N):
-    pyout.write("[TB {j}] {ans}\n".format(ans=khm8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
-
+i=0
+for k in range(N):
+    pyout.write("[TB {j}] {ans}\n".format(ans=smul8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
+    i=i+1
+    pyout.write("[TB {j}] {ans}\n".format(ans=smulx8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
+    i=i+1
+    pyout.write("[TB {j}] {ans}\n".format(ans=umul8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
+    i=i+1
+    pyout.write("[TB {j}] {ans}\n".format(ans=umulx8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
+    i=i+1
 
 pyout.close()
 pyout = open("./outputs/pyout.txt", "a")
-pyout.write("[TB] Timeout")
+pyout.write("[TB] Timeout\n")
 computeTB = open("../computeTB.bsv", "a")
 computeTB.write("\n\tendrule\nendmodule")
 computeTB.close()

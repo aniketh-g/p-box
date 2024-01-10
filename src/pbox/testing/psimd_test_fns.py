@@ -13,11 +13,12 @@ def mul8(a, b, isSigned, isSaturate):
 
     if(isSigned):
         # Convert to signed values
-        a = a if a < 128 else a - 256
-        b = b if b < 128 else b - 256
+        a = a if a < 2**7 else a - 2**8
+        b = b if b < 2**7 else b - 2**8
 
     # Perform multiplication
     result = a * b
+    
     if(isSaturate):
         if (result >= 2**15):
             result = 2**15-1
