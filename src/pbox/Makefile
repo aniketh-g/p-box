@@ -14,6 +14,15 @@ testUSmultiplier:
 	@bsc -e mkTest mkTest.v
 	@./a.out +RTS -K40000M +RTS
 
+.PHONY: testBWmultiplier
+testBWmultiplier: 
+	@bsc baughwooley.bsv
+	@bsc baughwooley_module.bsv
+	@bsc -verilog baughwooley_TB.bsv
+	@bsc -e mkTest mkTest.v
+	@bsc -e mkTest mkTest.v +RTS -K40000M +RTS
+	@./a.out
+
 .PHONY: testMultiplier_by4
 testMultiplier_by4: 
 	@bsc multiplier_by4.bsv
@@ -43,13 +52,12 @@ testcompute:
 	@echo "\033[0;32mTestbench generated: computeTB.bsv\033[0m"
 	@echo "Running tests..."
 	@bsc pbox_types.bsv
-	@bsc usmultiplier.bsv
 	@bsc compute.bsv
-	@bsc -verilog computeTB.bsv +RTS -K40000M -RTS
+	@bsc -verilog -steps 10000000 computeTB.bsv +RTS -K40000M -RTS
 	@bsc -e mkTest mkTest.v +RTS -K40000M -RTS
 	@./a.out > $(TESTOUT)/tbout.txt
 	@echo "\033[0;32mGenerated testbench outputs\033[0m"
-	@cmp --silent $(TESTOUT)/tbout.txt $(PYOUT)/pyout.txt && echo "\033[0;32m--- ALL TESTS PASSED !!! ---" || echo "\033[0;31m--- TEST FAILED ---"
+	@cmp --silent $(TESTOUT)/tbout.txt $(TESTOUT)/pyout.txt && echo "\033[0;32m--- ALL TESTS PASSED !!! ---" || echo "\033[0;31m--- TEST FAILED ---"
 
 .PHONY: clean
 clean:

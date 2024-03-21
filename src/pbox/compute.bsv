@@ -64,11 +64,11 @@ import multiplier_by4   :: * ;
         Bit#(8) byt6_ip2 = rv2[55:48];
         Bit#(8) byt7_ip2 = rv2[63:56];
         
-        Bit#(64) isSign = zeroExtend(~(f7[4] & f7[3]));
+        Bit#(1) isSign = (~(f7[4] & f7[3]));
         Bit#(1) isCross = f7[0];
         Bit#(1) isSat = f7[1];
 
-        if (isCross == 1) begin // UMULX8
+        if (isCross == 1) begin // UMULX8 and SMULX8
             byt0_ip2 = rv2[15:8];
             byt1_ip2 = rv2[7:0];
             byt2_ip2 = rv2[31:24];

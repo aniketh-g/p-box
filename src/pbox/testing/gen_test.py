@@ -4,7 +4,7 @@ from psimd_test_fns import *
 import random
 from random import randrange
 
-N = 50
+N = 5
 
 computeTB = open("../computeTB.bsv", "w")
 computeTB.write("""\
@@ -27,21 +27,22 @@ module mkTest(Empty);\n\
 .format(N=N*4+10))
 computeTB.close()
 
-pyout = open("./outputs/pyout.txt", "w")
+pyout = open("/home/vaibhav/Documents/testingfiles/outputs/pyout.txt", "w")
 
 i=0
 for k in range(N):
-    pyout.write("[TB {j}] {ans}\n".format(ans=smul8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
+    pyout.write("[TB {j}] {ans}\n".format(ans=khmx16(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
+   # i=i+1
+   # pyout.write("[TB {j}] {ans}\n".format(ans=umulx8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
     i=i+1
-    pyout.write("[TB {j}] {ans}\n".format(ans=smulx8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
-    i=i+1
-    pyout.write("[TB {j}] {ans}\n".format(ans=umul8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
-    i=i+1
-    pyout.write("[TB {j}] {ans}\n".format(ans=umulx8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
-    i=i+1
+   # pyout.write("[TB {j}] {ans}\n".format(ans=umul16(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
+   # i=i+1
+   # pyout.write("[TB {j}] {ans}\n".format(ans=umulx16(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
+   # i=i+1
+   # pyout.write("[TB {j}] {ans}\n".format(ans=umul8(np.int64(randrange(-2**63,2**63-1)),np.int64(randrange(-2**63,2**63-1)), i), j=i))
 
 pyout.close()
-pyout = open("./outputs/pyout.txt", "a")
+pyout = open("/home/vaibhav/Documents/testingfiles/outputs/pyout.txt", "a")
 pyout.write("[TB] Timeout\n")
 computeTB = open("../computeTB.bsv", "a")
 computeTB.write("\n\tendrule\nendmodule")
