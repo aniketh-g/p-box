@@ -21,7 +21,7 @@ import multiplier_by4   :: * ;
     // 16 bit multiplications
     Bit#(1) isMul16 = 0, is16bitMulAcc = 0, isMul16A32 = 0, isMul16A64 = 0;
     // 32 bit multiplications
-    Bit#(1) is32BitMulAcc = 0, isMul32A64 = 0, isMSW32Mul = 0;
+    Bit#(1) is32BitMulAcc = 0, isMul32A64 = 0, isMSW32Mul = 0, is32BitAddSub = 0;
     case(f3) matches
         3'b000: begin
             isMul16 = (f7[6] & ~f7[5] & f7[4] & ~f7[2]) | (f7[6] & ~f7[5] & ~f7[2] & f7[1] & f7[0]);
@@ -36,6 +36,7 @@ import multiplier_by4   :: * ;
         end
         3'b010: begin
             is32BitMulAcc = (f7[2] & ~f7[1]) | (f7[5] & f7[2]);
+            is32BitAddSub = (~f7[6] & ~f7[5] & ~f7[2]) | (~f7[6] & ~f7[4] & ~f7[3] & ~f7[2]);
         end
     endcase
     Bit#(1) is16BitMul = is16bitMulAcc|isMul16;
@@ -290,6 +291,114 @@ import multiplier_by4   :: * ;
             end
         end
     end
+
+    else if (is32BitAddSub == 1) begin
+        Bit#(1) isADD = ~(f7[1] | f7[0]);
+        Bit#(1) isSUB =  (~f7[1] & f7[0]);
+        Bit#(1) isCRAS = (f7[1] & ~f7[0]);
+        Bit#(1) isCRSA = (f7[1] & f7[0]);
+
+        Bit#(1) isSIGNED = ~(f7[5] | f7[4]);
+        Bit#(1) isUNSIGNED = f7[4];
+        Bit#(1) isSATURATE = f7[3];
+
+        if (isSIGNED == 1) begin
+            Int#(33) tempres0, tempres1;
+
+            if (isADD == 1) begin
+                tempres0 = unpack(signExtend(rv1[31:0])) + unpack(signExtend((rv2[31:0])));
+                tempres1 = unpack(signExtend(rv1[63:32])) + unpack(signExtend((rv2[63:32])));
+            end
+            else if (isSUB == 1) begin
+                tempres0 = unpack(signExtend(rv1[31:0])) - unpack(signExtend((rv2[31:0])));
+                tempres1 = unpack(signExtend(rv1[63:32])) - unpack(signExtend((rv2[63:32])));
+            end
+            else if (isCRAS == 1) begin
+                tempres0 = unpack(signExtend(rv1[31:0])) - unpack(signExtend((rv2[63:32])));
+                tempres1 = unpack(signExtend(rv1[63:32])) + unpack(signExtend((rv2[31:0])));
+            end
+            else if (isCRSA == 1) begin
+                tempres0 = unpack(signExtend(rv1[31:0])) + unpack(signExtend((rv2[63:32])));
+                tempres1 = unpack(signExtend(rv1[63:32])) - unpack(signExtend((rv2[31:0])));
+            end
+
+            if (isSATURATE == 1) begin
+                if (tempres0 > (2^31 - 1)) begin
+                    tempres0 = 2^31 - 1;
+                    ov = 1;
+                end
+                else if (tempres0 < (-2^31)) begin
+                    tempres0 = -2^31;
+                    ov = 1;
+                end
+                if (tempres1 > (2^31 - 1)) begin
+                    tempres1 = 2^31 - 1;
+                    ov = 1;
+                end
+                else if (tempres1 < (-2^31)) begin
+                    tempres1 = -2^31;
+                    ov = 1;
+                end
+            end
+            else begin
+                tempres0 = (tempres0 >> 1);
+                tempres1 = (tempres1 >> 1);
+            end
+            
+            result = {pack(tempres1)[31:0], pack(tempres0)[31:0]};
+            valid = True;
+            
+        end
+        else begin
+            Bit#(33) tempres0, tempres1;
+            if (isADD == 1) begin
+                tempres0 = zeroExtend((rv1[31:0])) + zeroExtend((rv2[31:0]));
+                tempres1 = zeroExtend((rv1[63:32])) + zeroExtend((rv2[63:32]));
+            end
+            else if (isSUB == 1) begin
+                tempres0 = zeroExtend((rv1[31:0])) - zeroExtend((rv2[31:0]));
+                tempres1 = zeroExtend((rv1[63:32])) - zeroExtend((rv2[63:32]));
+            end
+            else if (isCRAS == 1) begin
+                tempres0 = zeroExtend((rv1[31:0])) - zeroExtend((rv2[63:32]));
+                tempres1 = zeroExtend((rv1[63:32])) + zeroExtend((rv2[31:0]));
+            end
+            else if (isCRSA == 1) begin
+                tempres0 = zeroExtend((rv1[31:0])) + zeroExtend((rv2[63:32]));
+                tempres1 = zeroExtend((rv1[63:32])) - zeroExtend((rv2[31:0]));
+            end
+
+            if (isUNSIGNED == 1) begin
+                if (isSATURATE == 1) begin
+                    if (tempres0 > (2^32 - 1)) begin
+                        tempres0 = 2^32 - 1;
+                        ov = 1;
+                    end
+                    else if (tempres0 < (0)) begin
+                        tempres0 = 0;
+                        ov = 1;
+                    end
+                    if (tempres1 > (2^32 - 1)) begin
+                        tempres1 = 2^32 - 1;
+                        ov = 1;
+                    end
+                    else if (tempres1 < (0)) begin
+                        tempres1 = 0;
+                        ov = 1;
+                    end
+                end
+                else begin
+                    tempres0 = (tempres0 >> 1);
+                    tempres1 = (tempres1 >> 1);
+                end
+            end
+        
+        result = {(tempres1[31:0]), (tempres0[31:0])};
+        valid = True;
+        
+        end
+    end
+
     else begin
       result = ?;
       valid = False;
