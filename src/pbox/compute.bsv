@@ -21,7 +21,11 @@ import multiplier_by4   :: * ;
     // 16 bit multiplications
     Bit#(1) isMul16 = 0, is16bitMulAcc = 0, isMul16A32 = 0, isMul16A64 = 0;
     // 32 bit multiplications
-    Bit#(1) is32BitMulAcc = 0, isMul32A64 = 0, isMSW32Mul = 0, is32BitAddSub = 0;
+    Bit#(1) is32BitMulAcc = 0, isMul32A64 = 0, isMSW32Mul = 0;
+    // 32 bit add/sub       
+    Bit#(1) is32BitAddSub = 0;
+    // 32 bit shift
+    Bit# (1) is32BitShift = 0;
     case(f3) matches
         3'b000: begin
             isMul16 = (f7[6] & ~f7[5] & f7[4] & ~f7[2]) | (f7[6] & ~f7[5] & ~f7[2] & f7[1] & f7[0]);
@@ -37,6 +41,7 @@ import multiplier_by4   :: * ;
         3'b010: begin
             is32BitMulAcc = (f7[2] & ~f7[1]) | (f7[5] & f7[2]);
             is32BitAddSub = (~f7[6] & ~f7[5] & ~f7[2]) | (~f7[6] & ~f7[4] & ~f7[3] & ~f7[2]);
+            is32BitShift = (~f7[6] & f7[5] & f7[3] & ~f7[2]) | (~f7[6] & f7[5] & f7[4] & ~f7[2]) | (f7[6] & ~f7[5] & ~f7[4] & ~f7[3]);
         end
     endcase
     Bit#(1) is16BitMul = is16bitMulAcc|isMul16;
@@ -302,54 +307,63 @@ import multiplier_by4   :: * ;
         Bit#(1) isUNSIGNED = f7[4];
         Bit#(1) isSATURATE = f7[3];
 
+        Bit#(1) state = 0;
+
         if (isSIGNED == 1) begin
-            Int#(33) tempres0, tempres1;
+            if (state == 0) begin
+                Int#(33) tempres0 = 0, tempres1 = 0;
 
-            if (isADD == 1) begin
-                tempres0 = unpack(signExtend(rv1[31:0])) + unpack(signExtend((rv2[31:0])));
-                tempres1 = unpack(signExtend(rv1[63:32])) + unpack(signExtend((rv2[63:32])));
-            end
-            else if (isSUB == 1) begin
-                tempres0 = unpack(signExtend(rv1[31:0])) - unpack(signExtend((rv2[31:0])));
-                tempres1 = unpack(signExtend(rv1[63:32])) - unpack(signExtend((rv2[63:32])));
-            end
-            else if (isCRAS == 1) begin
-                tempres0 = unpack(signExtend(rv1[31:0])) - unpack(signExtend((rv2[63:32])));
-                tempres1 = unpack(signExtend(rv1[63:32])) + unpack(signExtend((rv2[31:0])));
-            end
-            else if (isCRSA == 1) begin
-                tempres0 = unpack(signExtend(rv1[31:0])) + unpack(signExtend((rv2[63:32])));
-                tempres1 = unpack(signExtend(rv1[63:32])) - unpack(signExtend((rv2[31:0])));
+                if (isADD == 1) begin
+                    tempres0 = unpack(signExtend(rv1[31:0])) + unpack(signExtend((rv2[31:0])));
+                    tempres1 = unpack(signExtend(rv1[63:32])) + unpack(signExtend((rv2[63:32])));
+                end
+                else if (isSUB == 1) begin
+                    tempres0 = unpack(signExtend(rv1[31:0])) - unpack(signExtend((rv2[31:0])));
+                    tempres1 = unpack(signExtend(rv1[63:32])) - unpack(signExtend((rv2[63:32])));
+                end
+                else if (isCRAS == 1) begin
+                    tempres0 = unpack(signExtend(rv1[31:0])) - unpack(signExtend((rv2[63:32])));
+                    tempres1 = unpack(signExtend(rv1[63:32])) + unpack(signExtend((rv2[31:0])));
+                end
+                else if (isCRSA == 1) begin
+                    tempres0 = unpack(signExtend(rv1[31:0])) + unpack(signExtend((rv2[63:32])));
+                    tempres1 = unpack(signExtend(rv1[63:32])) - unpack(signExtend((rv2[31:0])));
+                end
+                state = 1;
             end
 
-            if (isSATURATE == 1) begin
-                if (tempres0 > (2^31 - 1)) begin
-                    tempres0 = 2^31 - 1;
-                    ov = 1;
-                end
-                else if (tempres0 < (-2^31)) begin
-                    tempres0 = -2^31;
-                    ov = 1;
-                end
-                if (tempres1 > (2^31 - 1)) begin
-                    tempres1 = 2^31 - 1;
-                    ov = 1;
-                end
-                else if (tempres1 < (-2^31)) begin
-                    tempres1 = -2^31;
-                    ov = 1;
-                end
-            end
+
             else begin
-                tempres0 = (tempres0 >> 1);
-                tempres1 = (tempres1 >> 1);
+                if (isSATURATE == 1) begin
+                    if (tempres0 > (2^31 - 1)) begin
+                        tempres0 = 2^31 - 1;
+                        ov = 1;
+                    end
+                    else if (tempres0 < (-2^31)) begin
+                        tempres0 = -2^31;
+                        ov = 1;
+                    end
+                    if (tempres1 > (2^31 - 1)) begin
+                        tempres1 = 2^31 - 1;
+                        ov = 1;
+                    end
+                    else if (tempres1 < (-2^31)) begin
+                        tempres1 = -2^31;
+                        ov = 1;
+                    end
+                end
+                else begin
+                    tempres0 = (tempres0 >> 1);
+                    tempres1 = (tempres1 >> 1);
+                end
+                result = {pack(tempres1)[31:0], pack(tempres0)[31:0]};
+                valid = True;
+                state = 0;
             end
-            
-            result = {pack(tempres1)[31:0], pack(tempres0)[31:0]};
-            valid = True;
             
         end
-        else begin
+
+        else begin // UNSIGNED
             Bit#(33) tempres0, tempres1;
             if (isADD == 1) begin
                 tempres0 = zeroExtend((rv1[31:0])) + zeroExtend((rv2[31:0]));
@@ -399,6 +413,98 @@ import multiplier_by4   :: * ;
         end
     end
 
+    else if (is32BitShift == 1) begin
+        Bit#(1) isSE = ~(f7[1] | f7[0]); // Sign Extend
+        Bit#(1) isZE = ~(f7[1] & (~f7[0])); // Zero Extend
+        Bit#(1) isLS = ~(f7[0] & (~f7[1])) // Left Shift
+        Bit#(1) isKSLRA = (f7[1] & f7[0]); // 
+
+        Bit#(1) isROUNDING = ~(f7[1] & f7[3]); // for .u instructions except kslra32.u
+        Bit#(1) isIMM = ~(f7[4]^f7[3]); // Shift amount is imm5 (op[24:20])
+        
+        // Assigning value to shift ammount
+        Bit#(5) sa = 0;
+        if (isIMM == 1) sa = inp.instr[24:20];
+        else sa = rv2[4:0];
+
+        if (isSE == 1) begin // Arithmetic
+            Bit#(33) tempres1 = 0;
+            Bit#(33) tempres0 = 0;
+            if (sa != 0) begin
+                if (isROUNDING == 1) begin
+                    tempres1 = signExtend(rv1[63:(31+sa)]) + 1;
+                    tempres0 = signExtend(rv1[31:(sa-1)]) + 1;
+                end
+                else begin
+                    tempres1 = signExtend(rv1[63:(32+sa)]);
+                    tempres0 = signExtend(rv1[31:(sa)]);
+                end
+                result = {tempres1[31:0], tempres0[31:0]};
+                valid = True;
+            end
+            else begin
+                result = rv1;
+                valid = True;
+            end
+        end
+        else if (isZE == 1) begin // Logical
+            Bit#(33) tempres1 = 0;
+            Bit#(33) tempres0 = 0;
+            if (sa != 0) begin
+                if (isROUNDING == 1) begin
+                    tempres1 = zeroExtend(rv1[63:(31+sa)]) + 1;
+                    tempres0 = zeroExtend(rv1[31:(sa-1)]) + 1;
+                end
+                else begin
+                    tempres1 = zeroExtend(rv1[63:(32+sa)]);
+                    tempres0 = zeroExtend(rv1[31:(sa)]);
+                end
+                result = {tempres1[31:0], tempres0[31:0]};
+                valid = True;
+            end
+            else begin
+                result = rv1;
+                valid = True;
+            end
+        end
+        else if (isLS == 1) begin // Left shift
+            if (f7[3] == 1) begin
+                result = {(rv1[63:32] << sa),(rv1[31:0] << sa)};
+                valid = True;
+            end
+            else begin
+                if (sa != 0) begin
+                    Int#((32+sa)) tempres1 = rv[63:32] << sa;
+                    Int#((32+sa)) tempres0 = rv[31:0] << sa;
+                    if (tempres0 > (2^31 - 1)) begin
+                        tempres0 = 2^31 - 1;
+                        ov = 1;
+                    end
+                    else if (tempres0 < (-2^31)) begin
+                        tempres0 = -2^31;
+                        ov = 1;
+                    end
+                    if (tempres1 > (2^31 - 1)) begin
+                        tempres1 = 2^31 - 1;
+                        ov = 1;
+                    end
+                    else if (tempres1 < (-2^31)) begin
+                        tempres1 = -2^31;
+                        ov = 1;
+                    end
+                    result = {tempres1[31:0], tempres0[31:0]};
+                end
+                else begin
+                    result = rv1;
+                end
+            end
+        end
+        else if (isKSLRA == 1) begin
+            Int#(5) sasigned = rv2[5:0];
+            
+        end
+    end
+
     else begin
       result = ?;
       valid = False;
@@ -425,3 +531,5 @@ function Bit#(m) round(Bit#(n) a);
     Bit#(TAdd#(m,1)) r = a[valueOf(TSub#(n,1)):valueOf(TSub#(TSub#(n,1),m))] + 1;
     return r[valueOf(m):1];
 endfunction
+
+// Functions to saturate values
