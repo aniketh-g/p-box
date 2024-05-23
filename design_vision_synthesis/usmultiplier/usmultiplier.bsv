@@ -63,7 +63,6 @@ function Bit#(TAdd#(n,m)) usMult(Bit#(n) a, Bit#(m) b, Bit#(1) sgn)
     // `ifdef debug $display("fs:%ba:%b", final_sum, direct_sum); `endif
 
     p = {final_sum, direct_sum};
-
     return p;
 endfunction
 
