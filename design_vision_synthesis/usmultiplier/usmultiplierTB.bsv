@@ -10,9 +10,9 @@ module mkTest(Empty);
     `ifdef isModule Ifc_Mult#(32) usMult <- mkMult; `endif
     Reg#(TbState) tbstate <- mkReg(Idle);
     
-    Wire#(Bit#(32)) a <- mkDWire(0);
-    Wire#(Bit#(32)) b <- mkDWire(0);
-    Wire#(Bit#(1)) sgn <- mkDWire(0);
+    Wire#(Bit#(32)) a <- mkDWire(10);
+    Wire#(Bit#(32)) b <- mkDWire(20);
+    Wire#(Bit#(1)) sgn <- mkDWire(1);
     // Wire#(Bit#(TMul#(n,2))) sgn_by_4 <- mkDWire(0);
 
     Wire#(Bit#(TAdd#(32, 32))) p <- mkReg(0);
