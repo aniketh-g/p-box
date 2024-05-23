@@ -1,0 +1,20 @@
+Warning: duplicate option '-nosplit' overrides previous value. (CMD-018)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -group f2f
+        -max_paths 20
+        -transition_time
+        -capacitance
+Design : mkTest
+Version: O-2018.06-SP5-4
+Date   : Fri May 24 02:08:39 2024
+****************************************
+
+Operating Conditions: tsl18fs120_scl_ss   Library: tsl18fs120_scl_ss
+Wire Load Model Mode: top
+No paths.
+
+1

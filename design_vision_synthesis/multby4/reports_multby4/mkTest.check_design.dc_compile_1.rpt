@@ -1,0 +1,22 @@
+ 
+****************************************
+check_design summary:
+Version:     O-2018.06-SP5-4
+Date:        Fri May 24 02:09:00 2024
+****************************************
+
+                   Name                                            Total
+--------------------------------------------------------------------------------
+Inputs/Outputs                                                      8
+    Unconnected ports (LINT-28)                                     8
+--------------------------------------------------------------------------------
+
+Warning: In design 'mkTest', port 'start__sgn_by_4[63]' is not connected to any nets. (LINT-28)
+Warning: In design 'mkTest', port 'start__sgn_by_4[62]' is not connected to any nets. (LINT-28)
+Warning: In design 'mkTest', port 'start__sgn_by_4[61]' is not connected to any nets. (LINT-28)
+Warning: In design 'mkTest', port 'start__sgn_by_4[60]' is not connected to any nets. (LINT-28)
+Warning: In design 'mkTest', port 'start__sgn_by_4[59]' is not connected to any nets. (LINT-28)
+Warning: In design 'mkTest', port 'start__sgn_by_4[58]' is not connected to any nets. (LINT-28)
+Warning: In design 'mkTest', port 'start__sgn_by_4[57]' is not connected to any nets. (LINT-28)
+Warning: In design 'mkTest', port 'start__sgn_by_4[56]' is not connected to any nets. (LINT-28)
+1

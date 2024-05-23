@@ -1,0 +1,34 @@
+ 
+****************************************
+Report : net fanout
+        -threshold 50
+Design : mkTest
+Version: O-2018.06-SP5-4
+Date   : Fri May 24 02:09:00 2024
+****************************************
+
+
+Operating Conditions: tsl18fs120_scl_ss   Library: tsl18fs120_scl_ss
+Wire Load Model Mode: top
+
+Design        Wire Load Model            Library
+------------------------------------------------
+mkTest                 540000            tsl18fs120_scl_ss
+
+
+Attributes:
+   dr - drc disabled
+    c - annotated capacitance
+    d - dont_touch
+    i - ideal_net
+    I - ideal_network
+    p - includes pin load
+    r - annotated resistance
+    h - high fanout
+
+Net                 Fanout   Attributes   Capacitance   Driver
+--------------------------------------------------------------------------------
+CLK                     64   dr               2.19      CLK
+start__sgn_by_4[0]      53                    2.17      start__sgn_by_4[0]
+EN_start               114                    4.52      EN_start
+1
