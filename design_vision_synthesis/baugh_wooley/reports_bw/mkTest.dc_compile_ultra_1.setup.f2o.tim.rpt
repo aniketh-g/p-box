@@ -1,0 +1,619 @@
+Warning: duplicate option '-nosplit' overrides previous value. (CMD-018)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -group f2o
+        -max_paths 20
+        -transition_time
+        -capacitance
+Design : mkTest
+Version: O-2018.06-SP5-4
+Date   : Fri May 24 01:23:21 2024
+****************************************
+
+Operating Conditions: tsl18fs120_scl_ss   Library: tsl18fs120_scl_ss
+Wire Load Model Mode: top
+
+  Startpoint: p_reg_31_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[31] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_31_/CP (denrq1)                   0.000     0.000      0.000 r
+  p_reg_31_/Q (denrq1)          0.005     0.111     0.532      0.532 r
+  result[31] (out)                        0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_16_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[16] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_16_/CP (denrq1)                   0.000     0.000      0.000 r
+  p_reg_16_/Q (denrq1)          0.005     0.111     0.532      0.532 r
+  result[16] (out)                        0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_15_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[15] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_15_/CP (denrq1)                   0.000     0.000      0.000 r
+  p_reg_15_/Q (denrq1)          0.005     0.111     0.532      0.532 r
+  result[15] (out)                        0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_14_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[14] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_14_/CP (denrq1)                   0.000     0.000      0.000 r
+  p_reg_14_/Q (denrq1)          0.005     0.111     0.532      0.532 r
+  result[14] (out)                        0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_13_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[13] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_13_/CP (denrq1)                   0.000     0.000      0.000 r
+  p_reg_13_/Q (denrq1)          0.005     0.111     0.532      0.532 r
+  result[13] (out)                        0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_11_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[11] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_11_/CP (denrq1)                   0.000     0.000      0.000 r
+  p_reg_11_/Q (denrq1)          0.005     0.111     0.532      0.532 r
+  result[11] (out)                        0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_10_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[10] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_10_/CP (denrq1)                   0.000     0.000      0.000 r
+  p_reg_10_/Q (denrq1)          0.005     0.111     0.532      0.532 r
+  result[10] (out)                        0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_8_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[8] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_8_/CP (denrq1)                    0.000     0.000      0.000 r
+  p_reg_8_/Q (denrq1)           0.005     0.111     0.532      0.532 r
+  result[8] (out)                         0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_7_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[7] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_7_/CP (denrq1)                    0.000     0.000      0.000 r
+  p_reg_7_/Q (denrq1)           0.005     0.111     0.532      0.532 r
+  result[7] (out)                         0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_6_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[6] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_6_/CP (denrq1)                    0.000     0.000      0.000 r
+  p_reg_6_/Q (denrq1)           0.005     0.111     0.532      0.532 r
+  result[6] (out)                         0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_5_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[5] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_5_/CP (denrq1)                    0.000     0.000      0.000 r
+  p_reg_5_/Q (denrq1)           0.005     0.111     0.532      0.532 r
+  result[5] (out)                         0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_4_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[4] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_4_/CP (denrq1)                    0.000     0.000      0.000 r
+  p_reg_4_/Q (denrq1)           0.005     0.111     0.532      0.532 r
+  result[4] (out)                         0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_3_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[3] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_3_/CP (denrq1)                    0.000     0.000      0.000 r
+  p_reg_3_/Q (denrq1)           0.005     0.111     0.532      0.532 r
+  result[3] (out)                         0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_2_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[2] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_2_/CP (denrq1)                    0.000     0.000      0.000 r
+  p_reg_2_/Q (denrq1)           0.005     0.111     0.532      0.532 r
+  result[2] (out)                         0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_1_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[1] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_1_/CP (denrq1)                    0.000     0.000      0.000 r
+  p_reg_1_/Q (denrq1)           0.005     0.111     0.532      0.532 r
+  result[1] (out)                         0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_0_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[0] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_0_/CP (denrq1)                    0.000     0.000      0.000 r
+  p_reg_0_/Q (denrq1)           0.005     0.111     0.532      0.532 r
+  result[0] (out)                         0.111     0.000      0.532 r
+  data arrival time                                            0.532
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.532
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.768
+
+
+  Startpoint: p_reg_18_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[18] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_18_/CP (denrq4)                   0.000     0.000      0.000 r
+  p_reg_18_/Q (denrq4)          0.005     0.084     0.462      0.462 f
+  result[18] (out)                        0.084     0.000      0.462 f
+  data arrival time                                            0.462
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.462
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.838
+
+
+  Startpoint: p_reg_17_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[17] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_17_/CP (denrq4)                   0.000     0.000      0.000 r
+  p_reg_17_/Q (denrq4)          0.005     0.084     0.462      0.462 f
+  result[17] (out)                        0.084     0.000      0.462 f
+  data arrival time                                            0.462
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.462
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.838
+
+
+  Startpoint: p_reg_12_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[12] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_12_/CP (denrq4)                   0.000     0.000      0.000 r
+  p_reg_12_/Q (denrq4)          0.005     0.084     0.462      0.462 f
+  result[12] (out)                        0.084     0.000      0.462 f
+  data arrival time                                            0.462
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.462
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.838
+
+
+  Startpoint: p_reg_9_ (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: result[9] (output port clocked by CLK)
+  Path Group: f2o
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mkTest             280000                tsl18fs120_scl_ss
+
+  Point                           Cap     Trans      Incr       Path
+  ---------------------------------------------------------------------
+  clock CLK (rise edge)                             0.000      0.000
+  clock network delay (ideal)                       0.000      0.000
+  p_reg_9_/CP (denrq4)                    0.000     0.000      0.000 r
+  p_reg_9_/Q (denrq4)           0.005     0.084     0.462      0.462 f
+  result[9] (out)                         0.084     0.000      0.462 f
+  data arrival time                                            0.462
+
+  clock CLK (rise edge)                            10.000     10.000
+  clock network delay (ideal)                       0.000     10.000
+  clock uncertainty                                -0.200      9.800
+  output external delay                            -2.500      7.300
+  data required time                                           7.300
+  ---------------------------------------------------------------------
+  data required time                                           7.300
+  data arrival time                                           -0.462
+  ---------------------------------------------------------------------
+  slack (MET)                                                  6.838
+
+
+1

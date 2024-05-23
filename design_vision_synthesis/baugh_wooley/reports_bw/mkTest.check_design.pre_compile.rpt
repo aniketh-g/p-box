@@ -1,0 +1,22 @@
+ 
+****************************************
+check_design summary:
+Version:     O-2018.06-SP5-4
+Date:        Fri May 24 01:13:58 2024
+****************************************
+
+                   Name                                            Total
+--------------------------------------------------------------------------------
+Inputs/Outputs                                                      3
+    Shorted outputs (LINT-31)                                       1
+    Constant outputs (LINT-52)                                      2
+
+Nets                                                                1
+    Unloaded nets (LINT-2)                                          1
+--------------------------------------------------------------------------------
+
+Warning: In design 'mkTest', net 'net72' driven by pin 'add_7977/Z_0' has no loads. (LINT-2)
+Warning: In design 'mkTest', output port 'RDY_start' is connected directly to output port 'RDY_result'. (LINT-31)
+Warning: In design 'mkTest', output port 'RDY_start' is connected directly to 'logic 1'. (LINT-52)
+Warning: In design 'mkTest', output port 'RDY_result' is connected directly to 'logic 1'. (LINT-52)
+1

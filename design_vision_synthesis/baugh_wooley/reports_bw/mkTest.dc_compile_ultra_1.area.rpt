@@ -1,0 +1,43 @@
+ 
+****************************************
+Report : area
+Design : mkTest
+Version: O-2018.06-SP5-4
+Date   : Fri May 24 01:23:21 2024
+****************************************
+
+Library(s) Used:
+
+    tsl18fs120_scl_ss (File: /home/mtech/tools/pdk/180nm/stdlib/fs120/liberty/lib_flow_ss/tsl18fs120_scl_ss.db)
+
+Number of ports:                          134
+Number of nets:                         13834
+Number of cells:                        13713
+Number of combinational cells:          13647
+Number of sequential cells:                64
+Number of macros/black boxes:               0
+Number of buf/inv:                       3164
+Number of references:                     104
+
+Combinational area:             268207.720133
+Buf/Inv area:                    34556.659892
+Noncombinational area:            6221.759888
+Macro/Black Box area:                0.000000
+Net Interconnect area:            8245.183981
+
+Total cell area:                274429.480021
+Total area:                     282674.664002
+
+Hierarchical area distribution
+------------------------------
+
+                                  Global cell area             Local cell area
+                                  --------------------  ------------------------------ 
+Hierarchical cell                 Absolute     Percent  Combi-       Noncombi-  Black-
+                                  Total        Total    national     national   boxes   Design
+--------------------------------  -----------  -------  -----------  ---------  ------  ---------
+mkTest                            274429.4800    100.0  268207.7201  6221.7599  0.0000  mkTest
+--------------------------------  -----------  -------  -----------  ---------  ------  ---------
+Total                                                   268207.7201  6221.7599  0.0000
+
+1

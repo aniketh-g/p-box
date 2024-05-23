@@ -1,0 +1,31 @@
+Information: Updating graph... (UID-83)
+ 
+****************************************
+Report : net fanout
+        -threshold 50
+Design : mkTest
+Version: O-2018.06-SP5-4
+Date   : Fri May 24 01:13:58 2024
+****************************************
+
+
+Operating Conditions: tsl18fs120_scl_ss   Library: tsl18fs120_scl_ss
+Wire Load Model Mode: top
+
+
+Attributes:
+   dr - drc disabled
+    c - annotated capacitance
+    d - dont_touch
+    i - ideal_net
+    I - ideal_network
+    p - includes pin load
+    r - annotated resistance
+    h - high fanout
+
+Net                 Fanout   Attributes   Capacitance   Driver
+--------------------------------------------------------------------------------
+*Logic0*               668   dr               0.00      U2/**logic_0**
+CLK                     64   dr               0.00      CLK
+N68                     64                    0.00      C8351/Z_0
+1
