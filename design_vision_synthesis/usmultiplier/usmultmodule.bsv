@@ -4,15 +4,15 @@ export usmultmodule::*;
 import usmultiplier::*;
 
 interface Ifc_Mult#(numeric type n);
-    method Action start(Bit#(n) _a, Bit#(n) _b, Bit#(1) _sgn);
-    method Bit#(TMul#(n, 2)) result;
+   method Action start(Bit#(n) _a, Bit#(n) _b, Bit#(1) _sgn);
+    method Bit#(TAdd#(n, n)) result;
 endinterface : Ifc_Mult
 
 module mkMult(Ifc_Mult#(n))
 	provisos(Add#(1, a__, n));
-	Wire#(Bit#(n)) a <- mkDWire(0);
-    	Wire#(Bit#(n)) b <- mkDWire(0);
-    	Wire#(Bit#(1)) sgn <- mkDWire(0);
+	Wire#(Bit#(n)) a <- mkWire();
+    	Wire#(Bit#(n)) b <- mkWire();
+    	Wire#(Bit#(1)) sgn <- mkWire();
     	// Wire#(Bit#(TMul#(n,2))) sgn_by_4 <- mkDWire(0);
 
     	Reg#(Bit#(TAdd#(n, n))) p <- mkReg(0);
