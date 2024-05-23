@@ -1,0 +1,27 @@
+ 
+****************************************
+Report : resources
+Design : mkTest
+Version: O-2018.06-SP5-4
+Date   : Thu May 23 21:17:10 2024
+****************************************
+
+
+Resource Report for this hierarchy in file
+        /home/mtech/users/poovarasan2/physical_design/expts/usmult/rtl/mkTest.v
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| add_x_1        | DW01_add       | width=32   | add_8328 (mkTest.v:8328)   |
+=============================================================================
+
+
+Implementation Report
+===============================================================================
+|                    |                  | Current            | Set            |
+| Cell               | Module           | Implementation     | Implementation |
+===============================================================================
+| add_x_1            | DW01_add         | pparch (area,speed)                 |
+===============================================================================
+
+1
