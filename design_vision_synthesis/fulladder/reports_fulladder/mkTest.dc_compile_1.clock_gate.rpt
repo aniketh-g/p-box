@@ -1,0 +1,31 @@
+ 
+****************************************
+Report : clock_gating
+        -gating_elements
+        -gated
+        -verbose
+Design : mkTest
+Version: O-2018.06-SP5-4
+Date   : Fri May 24 05:07:01 2024
+****************************************
+
+
+ Information:  No Clock Gating Cell Found.
+
+ Information:  No Gated Register Found.
+
+
+                             Clock Gating Summary
+          ------------------------------------------------------------
+          |    Number of Clock gating elements    |        0         |
+          |                                       |                  |
+          |    Number of Gated registers          |     0 (0.00%)    |
+          |                                       |                  |
+          |    Number of Ungated registers        |     2 (100.00%)  |
+          |                                       |                  |
+          |    Total number of registers          |        2         |
+          ------------------------------------------------------------
+
+
+
+1

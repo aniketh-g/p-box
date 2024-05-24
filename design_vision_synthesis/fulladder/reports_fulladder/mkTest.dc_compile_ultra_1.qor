@@ -1,0 +1,96 @@
+ 
+****************************************
+Report : qor
+Design : mkTest
+Version: O-2018.06-SP5-4
+Date   : Fri May 24 05:06:40 2024
+****************************************
+
+
+  Timing Path Group 'f2o'
+  -----------------------------------
+  Levels of Logic:               0.00
+  Critical Path Length:          0.52
+  Critical Path Slack:           6.78
+  Critical Path Clk Period:     10.00
+  Total Negative Slack:          0.00
+  No. of Violating Paths:        0.00
+  Worst Hold Violation:          0.00
+  Total Hold Violation:          0.00
+  No. of Hold Violations:        0.00
+  -----------------------------------
+
+  Timing Path Group 'i2f'
+  -----------------------------------
+  Levels of Logic:               2.00
+  Critical Path Length:          0.73
+  Critical Path Slack:           6.06
+  Critical Path Clk Period:     10.00
+  Total Negative Slack:          0.00
+  No. of Violating Paths:        0.00
+  Worst Hold Violation:          0.00
+  Total Hold Violation:          0.00
+  No. of Hold Violations:        0.00
+  -----------------------------------
+
+
+  Cell Count
+  -----------------------------------
+  Hierarchical Cell Count:          0
+  Hierarchical Port Count:          0
+  Leaf Cell Count:                  9
+  Buf/Inv Cell Count:               3
+  Buf Cell Count:                   0
+  Inv Cell Count:                   3
+  CT Buf/Inv Cell Count:            0
+  Combinational Cell Count:         7
+  Sequential Cell Count:            2
+  Macro Count:                      0
+  -----------------------------------
+
+
+  Area
+  -----------------------------------
+  Combinational Area:      122.290002
+  Noncombinational Area:   175.619995
+  Buf/Inv Area:             18.810000
+  Total Buffer Area:             0.00
+  Total Inverter Area:          18.81
+  Macro/Black Box Area:      0.000000
+  Net Area:                  2.615760
+  -----------------------------------
+  Cell Area:               297.909997
+  Design Area:             300.525757
+
+
+  Design Rules
+  -----------------------------------
+  Total Number of Nets:            18
+  Nets With Violations:             0
+  Max Trans Violations:             0
+  Max Cap Violations:               0
+  -----------------------------------
+
+
+  Hostname: mtech-OptiPlex-7450-AIO
+
+  Compile CPU Statistics
+  -----------------------------------------
+  Resource Sharing:                    0.00
+  Logic Optimization:                  0.07
+  Mapping Optimization:                0.97
+  -----------------------------------------
+  Overall Compile Time:                4.70
+  Overall Compile Wall Clock Time:     4.51
+
+  --------------------------------------------------------------------
+
+  Design  WNS: 0.00  TNS: 0.00  Number of Violating Paths: 0
+
+
+  Design (Hold)  WNS: 0.00  TNS: 0.00  Number of Violating Paths: 0
+
+  --------------------------------------------------------------------
+
+
+1
