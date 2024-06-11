@@ -310,7 +310,7 @@ import multiplier_by4   :: * ;
         Bit#(1) state = 0;
 
         if (isSIGNED == 1) begin
-            if (state == 0) begin
+            //if (state == 0) begin
                 Int#(33) tempres0 = 0, tempres1 = 0;
 
                 if (isADD == 1) begin
@@ -329,11 +329,11 @@ import multiplier_by4   :: * ;
                     tempres0 = unpack(signExtend(rv1[31:0])) + unpack(signExtend((rv2[63:32])));
                     tempres1 = unpack(signExtend(rv1[63:32])) - unpack(signExtend((rv2[31:0])));
                 end
-                state = 1;
-            end
+                // state = 1;
+            //end
 
 
-            else begin
+            //else begin
                 if (isSATURATE == 1) begin
                     if (tempres0 > (2^31 - 1)) begin
                         tempres0 = 2^31 - 1;
@@ -358,13 +358,13 @@ import multiplier_by4   :: * ;
                 end
                 result = {pack(tempres1)[31:0], pack(tempres0)[31:0]};
                 valid = True;
-                state = 0;
-            end
+                //state = 0;
+            //end
             
         end
 
         else begin // UNSIGNED
-            Bit#(33) tempres0, tempres1;
+            Bit#(33) tempres0 = 0, tempres1 = 0;
             if (isADD == 1) begin
                 tempres0 = zeroExtend((rv1[31:0])) + zeroExtend((rv2[31:0]));
                 tempres1 = zeroExtend((rv1[63:32])) + zeroExtend((rv2[63:32]));
@@ -416,7 +416,7 @@ import multiplier_by4   :: * ;
     else if (is32BitShift == 1) begin
         Bit#(1) isSE = ~(f7[1] | f7[0]); // Sign Extend
         Bit#(1) isZE = ~(f7[1] & (~f7[0])); // Zero Extend
-        Bit#(1) isLS = ~(f7[0] & (~f7[1])) // Left Shift
+        Bit#(1) isLS = ~(f7[0] & (~f7[1])); // Left Shift
         Bit#(1) isKSLRA = (f7[1] & f7[0]); // 
 
         Bit#(1) isROUNDING = ~(f7[1] & f7[3]); // for .u instructions except kslra32.u
@@ -432,12 +432,13 @@ import multiplier_by4   :: * ;
             Bit#(33) tempres0 = 0;
             if (sa != 0) begin
                 if (isROUNDING == 1) begin
-                    tempres1 = signExtend(rv1[63:(31+sa)]) + 1;
-                    tempres0 = signExtend(rv1[31:(sa-1)]) + 1;
+                    let p = conv(sa);
+                    tempres1 = signExtend(rv1[63:p]) + 1;
+                    //tempres0 = signExtend(rv1[31:(sa-1)]) + 1;
                 end
                 else begin
-                    tempres1 = signExtend(rv1[63:(32+sa)]);
-                    tempres0 = signExtend(rv1[31:(sa)]);
+                    //tempres1 = signExtend(rv1[63:(32+sa)]);
+                    //tempres0 = signExtend(rv1[31:(sa)]);
                 end
                 result = {tempres1[31:0], tempres0[31:0]};
                 valid = True;
@@ -452,12 +453,12 @@ import multiplier_by4   :: * ;
             Bit#(33) tempres0 = 0;
             if (sa != 0) begin
                 if (isROUNDING == 1) begin
-                    tempres1 = zeroExtend(rv1[63:(31+sa)]) + 1;
-                    tempres0 = zeroExtend(rv1[31:(sa-1)]) + 1;
+                    //tempres1 = zeroExtend(rv1[63:(31+sa)]) + 1;
+                    //tempres0 = zeroExtend(rv1[31:(sa-1)]) + 1;
                 end
                 else begin
-                    tempres1 = zeroExtend(rv1[63:(32+sa)]);
-                    tempres0 = zeroExtend(rv1[31:(sa)]);
+                    //tempres1 = zeroExtend(rv1[63:(32+sa)]);
+                    //tempres0 = zeroExtend(rv1[31:(sa)]);
                 end
                 result = {tempres1[31:0], tempres0[31:0]};
                 valid = True;
@@ -474,8 +475,8 @@ import multiplier_by4   :: * ;
             end
             else begin
                 if (sa != 0) begin
-                    Int#((32+sa)) tempres1 = rv[63:32] << sa;
-                    Int#((32+sa)) tempres0 = rv[31:0] << sa;
+                    Int#((32)) tempres1 = unpack(rv1[63:32] << sa);
+                    Int#((32)) tempres0 = unpack(rv1[31:0] << sa);
                     if (tempres0 > (2^31 - 1)) begin
                         tempres0 = 2^31 - 1;
                         ov = 1;
@@ -492,7 +493,7 @@ import multiplier_by4   :: * ;
                         tempres1 = -2^31;
                         ov = 1;
                     end
-                    result = {tempres1[31:0], tempres0[31:0]};
+                    result = {pack(tempres1)[31:0], pack(tempres0)[31:0]};
                 end
                 else begin
                     result = rv1;
@@ -500,8 +501,8 @@ import multiplier_by4   :: * ;
             end
         end
         else if (isKSLRA == 1) begin
-            Int#(5) sasigned = rv2[5:0];
-            
+            //Int#(6) sasigned = unpack(rv2)[5:0];
+
         end
     end
 
@@ -532,4 +533,11 @@ function Bit#(m) round(Bit#(n) a);
     return r[valueOf(m):1];
 endfunction
 
-// Functions to saturate values
+// Functions to convert Bit#(n) to numeric type
+function Integer conv(Bit#(n) a);
+    Integer x;
+    for(Integer i = 0; i < valueOf(a); i = i + 1) begin
+        x = x + 1;
+    end
+    return x;
+endfunction
