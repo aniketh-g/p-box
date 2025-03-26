@@ -9,7 +9,9 @@ module mkTest(Empty);
     Reg#(TbState) tbstate <- mkReg(Idle);
     Reg#(Bit#(8)) counter <- mkReg(0);
 
-    `ifdef isModule Ifc_Mult#(8) usMult <- mkMult; `endif
+    `ifdef isModule
+    Ifc_Mult#(8) usMult <- mkMult;
+    `endif
 
     rule count;
         counter <= counter+1;
@@ -19,13 +21,13 @@ module mkTest(Empty);
     `ifndef isModule
     rule test;
         if(counter == 1) begin
-            let ans = usMult(8'b00100011,
-                             8'b00010010, 1'b1, 16'b0);
-            $display("Direct: ans = %b = %d = -%d", ans, ans, ~ans+1);
+            let ans = usMult(64'd7830065054738571350[31:0],
+            64'd4112085165966938706[31:0], 1'b0, 1'b0);
+            $display("Direct: ans = %b = %d = -%d", ans[63:48], ans, ~ans+1);
         end
         if(counter == 2) begin
             let ans = usMult(8'b00100011,
-                             8'b00010010, 1'b0, 16'b1);
+                             8'b00010010, 1'b0, 1'b1);
             $display("By4: ans = %b: %b, %b", ans, ans[11:8], ans[3:0]);
         end
     endrule

@@ -20,20 +20,24 @@ function Bit#(x) gen_sum(Bit#(x) snew_prev, Bit#(x) s, Bit#(x) cin);
 endfunction
 
 
-function Bit#(TAdd#(n,n)) usMult(Bit#(n) a, Bit#(n) b, Bit#(1) sgn, Bit#(TMul#(n,2)) sgn_by_4)
-    provisos(Add#(1, a__, n), Add#(b__, 1, TAdd#(n, n)),Add#(c__, 2, TAdd#(n, n)),Add#(d__, 3, TAdd#(n, n)),Add#(e__, 16, TAdd#(n, n)),Add#(f__, TMul#(n, 2), TAdd#(n, n)));
+function Bit#(TAdd#(n,n)) usMult(Bit#(n) a, Bit#(n) b, Bit#(1) sgn, Bit#(1) sgn4)
+    provisos(Add#(1, a__, n), Add#(b__, 1, TAdd#(n, n)),Add#(c__, 2, TAdd#(n, n)),Add#(d__, 3, TAdd#(n, n)),Add#(e__, 16, TAdd#(n, n)),Add#(f__, TMul#(n, 2), TAdd#(n, n)), Add#(g__, 1, TMul#(n, 2)));
     
     Bit#(TAdd#(n, n)) p;
 
     Vector#(n, Bit#(n)) s = newVector();
     Vector#(n, Bit#(n)) snew = newVector();
     Vector#(n, Bit#(n)) carries = newVector();
+
+    Bit#(TMul#(n,2)) sgn_by_4 = {0,sgn4};
     
     // `ifdef debug $display("sign_config = ", sgn); `endif
 
     for(Integer i = 0; i < valueOf(n); i = i + 1)
         for(Integer j = 0; j < valueOf(n); j = j + 1) begin
-            if(((j == valueOf(n) - 1) || (i == valueOf(n) - 1)) && !((j == valueOf(n) - 1) && (i == valueOf(n) - 1))) s[i][j] = (a[j] & b[i])^sgn;
+            if(((j == valueOf(n) - 1) || (i == valueOf(n) - 1)) && !((j == valueOf(n) - 1) && (i == valueOf(n) - 1))) 
+                
+                s[i][j] = (a[j] & b[i])^sgn;
 
             else if(((j == valueOf(TDiv#(TMul#(n,3),4)) - 1) || (i == valueOf(TDiv#(TMul#(n,3),4)) - 1)) && //border adders
                    !((j == valueOf(TDiv#(TMul#(n,3),4)) - 1) && (i == valueOf(TDiv#(TMul#(n,3),4)) - 1)) &&  //intersection
@@ -50,7 +54,7 @@ function Bit#(TAdd#(n,n)) usMult(Bit#(n) a, Bit#(n) b, Bit#(1) sgn, Bit#(TMul#(n
             else if(((i <  valueOf(TDiv#(n,4)) && j >= valueOf(TDiv#(n,4))) ||
                      (i >= valueOf(TDiv#(n,4)) && j <  valueOf(TDiv#(n,4)))))
 
-                    s[i][j] = (a[j] & b[i]) & (~sgn_by_4[0]);
+                    s[i][j] = (a[j] & b[i]) & ((~sgn_by_4[0]) & sgn);
 
             else s[i][j] = a[j] & b[i];
         end
@@ -75,7 +79,7 @@ function Bit#(TAdd#(n,n)) usMult(Bit#(n) a, Bit#(n) b, Bit#(1) sgn, Bit#(TMul#(n
             // `ifdef debug $display("carries[%d] = %b, snew[%d] = %b", v, carries[v], v, snew[v]); `endif
         end
 
-    Bit#(n) final_sum = {sgn, snew[valueOf(n)-1][valueOf(n)-1:1]}+carries[valueOf(n)-1];
+    Bit#(n) final_sum = {sgn, snew[valueOf(n)-1][valueOf(n)-1:1]}+carries[valueOf(n)-1]; // Vector merge stage
     // `ifdef debug $display("fs:%ba:%b", final_sum, direct_sum); `endif
 
     p = {final_sum, direct_sum};

@@ -1,0 +1,7 @@
+!.gitignore
+**/*.bo
+**/*.ba
+**/*.rpt
+**/*.v
+**/*.qor
+**/*.compile_1
