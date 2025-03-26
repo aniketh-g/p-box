@@ -1,0 +1,8 @@
+testing/outputs/*.txt
+synthout
+*.bo
+*.v
+*.out
+*.txt
+backup.bsv
+usmultiplier_debug.bsv

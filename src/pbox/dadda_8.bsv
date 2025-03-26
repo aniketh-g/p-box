@@ -29,7 +29,9 @@ function Bit#(16) dadda_8(Bit#(8) inpA, Bit#(8) inpB);
     // di_values = 2,3,4,6,8,13...
 
     // Stage 1 - reducing fom 8 to 6
-
+   
+    Tuple2#(Bit#(1), Bit#(1))  s1_c1 = hadd_1(gen_pp[6][0], gen_pp[5][1]);
+  
     s1[0] = tpl_1(hadd_1(gen_pp[6][0], gen_pp[5][1]));
     c1[0] = tpl_2(hadd_1(gen_pp[6][0], gen_pp[5][1]));
     s1[2] = tpl_1(hadd_1(gen_pp[4][3], gen_pp[3][4]));

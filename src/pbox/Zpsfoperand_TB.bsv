@@ -11,6 +11,11 @@ module mkTest(Empty);
     rule idle(tbstate == Idle);
         tbstate <= Compute;
         $display("TB Idle");
+        Bit#(4) a = 4'b0110;
+        Bit#(4) b = 4'b0011;
+        $display("%d+%d=%b", a, b, tpl_2(qnadd(a,b)));
+        Bit#(3) x = round(5'b01010);
+        $display("%b", x);
     endrule
     rule multiply(tbstate == Compute);
         $display("TB multiply");

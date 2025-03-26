@@ -2,14 +2,14 @@ import multiplier_by4::*;
 import multiplier_by4_module::*;
 typedef enum {Idle, Multiply, Next, Finish} TbState deriving (Bits, Eq);
 
-`define isModule
+// `define isModule
 
 (*synthesize*)
 module mkTest(Empty);
     Reg#(TbState) tbstate <- mkReg(Idle);
     Reg#(Bit#(8)) counter <- mkReg(0);
 
-    Ifc_Mult#(8) usMult <- mkMult;
+    `ifdef isModule Ifc_Mult#(8) usMult <- mkMult; `endif
 
     rule count;
         counter <= counter+1;

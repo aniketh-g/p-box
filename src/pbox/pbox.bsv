@@ -26,13 +26,6 @@ typedef struct{
 
 interface Ifc_pbox;
   (*prefix = ""*)
-  // (*always_ready, always_enabled*)
-  // method Action _start(Input_Packet m); never used
-  //method Action ma_inputs(Bit#(7) instr, Bit#(`xlen) rs1, Bit#(`xlen) rs2);
-  // (*result = "pbox_out"*)
-  // (*prefix = ""*)
-  // (*always_ready, always_enabled*)
-  //method PBoxOut mv_output;
   method TXe#(PBoxOut) tx_output;
   method Bit#(1) pbox_ready;
   method Action flush;
@@ -53,10 +46,9 @@ module mkpbox#(parameter Bit#(`xlen) hartid)(Ifc_pbox);
   TX#(PBoxOut) tx_pbox_out <- mkTX;
   Reg#(Bool) rg_multicycle_op <-mkReg(False);
 
-  FIFOF# (Input_Packet) ff_input   <- mkFIFOF1;
   Wire#(Bool) wr_flush<-mkDWire(False);
   Reg#(PBoxIn) rg_input <- mkReg(unpack(0));
-  FIFOF#(PBoxIn) fifo_input   <- mkFIFOF1;
+  FIFOF#(PBoxIn) fifo_input   <- mkLFIFOF;
   Wire#(PBoxOut) wr_output <- mkDWire(unpack(0));
   /*doc:wire: Wire which returns the output.
   */

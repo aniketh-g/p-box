@@ -44,12 +44,21 @@ testcompute:
 	@echo "Running tests..."
 	@bsc pbox_types.bsv
 	@bsc usmultiplier.bsv
+	@bsc multiplier_by4.bsv
 	@bsc compute.bsv
-	@bsc -verilog computeTB.bsv +RTS -K40000M -RTS
-	@bsc -e mkTest mkTest.v +RTS -K40000M -RTS
+	@bsc -verilog -steps 10000000 computeTB.bsv +RTS -K1000000M -RTS
+	@bsc -e mkTest mkTest.v +RTS -K1000000M -RTS
 	@./a.out > $(TESTOUT)/tbout.txt
 	@echo "\033[0;32mGenerated testbench outputs\033[0m"
-	@cmp --silent $(TESTOUT)/tbout.txt $(PYOUT)/pyout.txt && echo "\033[0;32m--- ALL TESTS PASSED !!! ---" || echo "\033[0;31m--- TEST FAILED ---"
+	@cmp $(TESTOUT)/tbout.txt $(TESTOUT)/pyout.txt && echo "\033[0;32m--- ALL TESTS PASSED !!! ---" || echo "\033[0;31m--- TEST FAILED ---"
+
+VERILOG = ../../build/hw/verilog
+SYNTHOUT = ./synthout
+
+.PHONY: synthesize
+synthesize:
+	@yosys -o $(SYNTHOUT)/mbox.blif -S $(VERILOG)/mkmbox.v > $(SYNTHOUT)/mbox.txt
+	@yosys -o $(SYNTHOUT)/pbox.blif -S $(VERILOG)/mkpbox.v > $(SYNTHOUT)/pbox.txt
 
 .PHONY: clean
 clean:
