@@ -35,11 +35,32 @@ Please refer to LICENSE.iitm for more details.
 
 ## Get Started [here](https://c-class.readthedocs.io/)
 
+## Present Repository: RISC-V "P" Extension
+
+The aim of this project is to implement the proposed [RISC-V "P" instruction set extension](https://github.com/riscv/riscv-p-spec/blob/master/P-ext-proposal.adoc) comprising
+of Packed Single Instruction, Multiple Data (PSIMD) instructions on Shakti’s C-Class SoC. This will 
+enable the processor to run various DSP applications with lower power and higher performance.
+
+To this end, a module was built to implement RISC-V’s PSIMD extension and integrated with the pipeline
+of the C-Class processor. A sign-configurable multiplier was designed for performing PSIMD computations
+efficiently. A generalized system was devised to generate the boolean logic for decoding the funct3 and
+funct7 portions of the instructions.
+
+A randomized testing infrastructure for checking functional correctness was developed using Python and 
+Bluespec. The Python script generates random test inputs and the expected/golden output and creates a
+Bluespec testbench for the SoC. Then, a simple bash script runs a Verilator simulation of the SoC testbench
+and compares the golden and actual outputs.
+
+The implementation of this extension provides, on average, a 30x speedup for relevant SIMD computations,
+enabling Shakti to perform DSP and AI computations significantly faster.
+
 ## Contributors (in alphabetical order of last name):
 
 - Rahul Bodduna
 - Neel Gala
 - Vinod Ganesan
+- Aniketh Ganesh
+- Vaibhav Krishna Garimella
 - Paul George
 - Aditya Govardhan
 - Arjun Menon
