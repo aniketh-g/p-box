@@ -5,6 +5,8 @@
 # C-Class Core Generator
 </div>
 
+For information about the project this repository is dedicated to, jump to [this section](#pext)
+
 ## What is C-Class 
 
 C-Class is a member of the [SHAKTI](https://shakti.org.in) family of processors.
@@ -29,13 +31,8 @@ at a much higher level thereby increasing throughput.
 The language is now supported by an open-source Bluespec compiler, which can generate synthesizable
 verilog compatible for FPGA and ASIC targets.
 
-## License
-All of the source code available in this repository is under the BSD license. 
-Please refer to LICENSE.iitm for more details.
-
-## Get Started [here](https://c-class.readthedocs.io/)
-
-## Present Repository: RISC-V "P" Extension
+<a name="pext"></a>
+## RISC-V "P" Instruction Set Extension
 
 The aim of this project is to implement the proposed [RISC-V "P" instruction set extension](https://github.com/riscv/riscv-p-spec/blob/master/P-ext-proposal.adoc) comprising
 of Packed Single Instruction, Multiple Data (PSIMD) instructions on Shakti’s C-Class SoC. This will 
@@ -53,6 +50,12 @@ and compares the golden and actual outputs.
 
 The implementation of this extension provides, on average, a 30x speedup for relevant SIMD computations,
 enabling Shakti to perform DSP and AI computations significantly faster.
+
+## License
+All of the source code available in this repository is under the BSD license. 
+Please refer to LICENSE.iitm for more details.
+
+## Get Started [here](https://c-class.readthedocs.io/)
 
 ## Contributors (in alphabetical order of last name):
 
