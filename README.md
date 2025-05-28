@@ -38,10 +38,14 @@ The aim of this project is to implement the proposed [RISC-V "P" instruction set
 of Packed Single Instruction, Multiple Data (PSIMD) instructions on Shakti’s C-Class SoC. This will 
 enable the processor to run various DSP applications with lower power and higher performance.
 
+<p align="center"> <img src="pipeline.png" height="300" /> </p>
+
 To this end, a module was built to implement RISC-V’s PSIMD extension and integrated with the pipeline
 of the C-Class processor. A sign-configurable multiplier was designed for performing PSIMD computations
 efficiently. A generalized system was devised to generate the boolean logic for decoding the funct3 and
 funct7 portions of the instructions.
+
+<p align="center"> <img src="pbox_data_flow.png" height="300" /> </p>
 
 A randomized testing infrastructure for checking functional correctness was developed using Python and 
 Bluespec. The Python script generates random test inputs and the expected/golden output and creates a
