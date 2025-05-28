@@ -55,6 +55,8 @@ and compares the golden and actual outputs.
 The implementation of this extension provides, on average, a 30x speedup for relevant SIMD computations,
 enabling Shakti to perform DSP and AI computations significantly faster.
 
+For a detailed report of the implementation and results, see [this document](Project_Report_part-1.pdf)
+
 ## License
 All of the source code available in this repository is under the BSD license. 
 Please refer to LICENSE.iitm for more details.
